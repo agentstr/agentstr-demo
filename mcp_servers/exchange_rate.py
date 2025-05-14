@@ -11,7 +11,7 @@ if __name__ == "__main__":
 
     # Get the environment variables
     relays = os.getenv('NOSTR_RELAYS').split(',')
-    private_key = os.getenv('NOSTR_SERVER_PRIVATE_KEY')
+    private_key = os.getenv('MCP_EXCHANGE_RATE_PRIVATE_KEY')
     nwc_str = os.getenv('NWC_CONN_STR')
 
 

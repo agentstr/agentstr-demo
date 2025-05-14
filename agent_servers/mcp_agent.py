@@ -26,10 +26,10 @@ model = ChatAnthropic(temperature=0, model_name="claude-3-7-sonnet-latest")
 @asynccontextmanager
 async def get_tools():
     relays = os.getenv('NOSTR_RELAYS').split(',')
-    private_key = os.getenv('NOSTR_CLIENT_PRIVATE_KEY')
-    current_datetime_mcp_server_public_key = os.getenv('NOSTR_SERVER_PUBLIC_KEY')
-    exchange_rate_mcp_server_public_key = os.getenv('NOSTR_SERVER_PUBLIC_KEY')
-    math_mcp_server_public_key = os.getenv('NOSTR_SERVER_PUBLIC_KEY')
+    private_key = os.getenv('AGENT_PRIVATE_KEY')
+    current_datetime_mcp_server_public_key = PrivateKey.from_nsec(os.getenv('MCP_DATETIME_PRIVATE_KEY')).public_key.bech32()
+    exchange_rate_mcp_server_public_key = PrivateKey.from_nsec(os.getenv('MCP_EXCHANGE_RATE_PRIVATE_KEY')).public_key.bech32()
+    math_mcp_server_public_key = PrivateKey.from_nsec(os.getenv('MCP_MATH_PRIVATE_KEY')).public_key.bech32()
     nwc_str = os.getenv('NWC_CONN_STR')
     async with MultiServerMCPClient(
         {
@@ -107,7 +107,7 @@ async def info():
                      'and get the exchange rate between two currencies.'),
         skills=skills,
         satoshis=50,
-        nostr_pubkey=PrivateKey.from_nsec(os.getenv('NOSTR_CLIENT_PRIVATE_KEY')).public_key.bech32(),
+        nostr_pubkey=PrivateKey.from_nsec(os.getenv('AGENT_PRIVATE_KEY')).public_key.bech32(),
     ).model_dump()
 
 

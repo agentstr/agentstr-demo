@@ -1,6 +1,4 @@
-import time
-from nostr_agents.nostr_client import NostrClient
-from nostr_agents.nostr_mcp_server import NostrMCPServer
+from nostr_agents.nostr_mcp_server import NostrMCPServer, NostrClient
 
 
 if __name__ == "__main__":
@@ -11,7 +9,7 @@ if __name__ == "__main__":
 
     # Get the environment variables
     relays = os.getenv('NOSTR_RELAYS').split(',')
-    private_key = os.getenv('NOSTR_SERVER_PRIVATE_KEY')
+    private_key = os.getenv('MCP_MATH_PRIVATE_KEY')
     nwc_str = os.getenv('NWC_CONN_STR')
 
 

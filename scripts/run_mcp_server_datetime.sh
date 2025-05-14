@@ -1,0 +1,1 @@
+uv run mcp_servers/current_datetime.py
