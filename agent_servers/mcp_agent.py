@@ -27,13 +27,29 @@ model = ChatAnthropic(temperature=0, model_name="claude-3-7-sonnet-latest")
 async def get_tools():
     relays = os.getenv('NOSTR_RELAYS').split(',')
     private_key = os.getenv('NOSTR_CLIENT_PRIVATE_KEY')
-    server_public_key = os.getenv('NOSTR_SERVER_PUBLIC_KEY')
+    current_datetime_mcp_server_public_key = os.getenv('NOSTR_SERVER_PUBLIC_KEY')
+    exchange_rate_mcp_server_public_key = os.getenv('NOSTR_SERVER_PUBLIC_KEY')
+    math_mcp_server_public_key = os.getenv('NOSTR_SERVER_PUBLIC_KEY')
     nwc_str = os.getenv('NWC_CONN_STR')
     async with MultiServerMCPClient(
         {
-            "nostr": {
+            "current_datetime": {
                 "relays": relays,
-                "server_public_key": server_public_key,
+                "server_public_key": current_datetime_mcp_server_public_key,
+                "private_key": private_key,
+                "nwc_str": nwc_str,
+                "transport": "nostr",
+            },
+            "exchange_rate": {
+                "relays": relays,
+                "server_public_key": exchange_rate_mcp_server_public_key,
+                "private_key": private_key,
+                "nwc_str": nwc_str,
+                "transport": "nostr",
+            },
+            "math": {
+                "relays": relays,
+                "server_public_key": math_mcp_server_public_key,
                 "private_key": private_key,
                 "nwc_str": nwc_str,
                 "transport": "nostr",
