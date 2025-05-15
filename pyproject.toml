@@ -6,15 +6,12 @@ requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115.12",
     "langchain-anthropic>=0.3.13",
-    "langchain-mcp-adapters",
     "langgraph>=0.4.3",
-    "nostr-agent-tools>=0.3.4",
+    "nostr-agent-tools>=0.3.6",
+    "langchain-nostr-mcp-adapters>=0.0.1",
     "pynostr>=0.6.2",
     "uvicorn>=0.34.2",
 ]
 
-[tool.uv.sources]
-langchain-mcp-adapters = { git = "https://github.com/ehallmark/langchain-mcp-adapters", rev = "nostr" }
-
 [tool.uv]
-reinstall-package = ["langchain-mcp-adapters"]
+reinstall-package = ["langchain-nostr-mcp-adapters", "nostr-agent-tools"]

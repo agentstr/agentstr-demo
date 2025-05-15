@@ -457,13 +457,17 @@ wheels = [
 ]
 
 [[package]]
-name = "langchain-mcp-adapters"
-version = "0.0.11"
-source = { git = "https://github.com/ehallmark/langchain-mcp-adapters?rev=nostr#f33340776676438215a7b0d694ede842ff247019" }
+name = "langchain-nostr-mcp-adapters"
+version = "0.0.1"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "langchain-core" },
     { name = "mcp" },
     { name = "nostr-agent-tools" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/0c/03/cd9352d016bdac06b463f2ffc3fa74af4981db63b28ae6aee985914ee28c/langchain_nostr_mcp_adapters-0.0.1.tar.gz", hash = "sha256:45aecaab7de6ed142580df86221ca949e76cd80b30169bafbacedeaf5e4c5df8", size = 16063 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c4/dd/4c10b356d1b4917cb8ad3140430408f07efab5034628b3429a58390d3f0c/langchain_nostr_mcp_adapters-0.0.1-py3-none-any.whl", hash = "sha256:20500b8b8afbbde189d73f13845bbb1d730b2b81957493ea92159fb949073fb2", size = 11767 },
 ]
 
 [[package]]
@@ -589,7 +593,7 @@ wheels = [
 
 [[package]]
 name = "nostr-agent-tools"
-version = "0.3.4"
+version = "0.3.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "bolt11" },
@@ -599,9 +603,9 @@ dependencies = [
     { name = "python-dotenv" },
     { name = "secp256k1" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/fb/88/a769d4d49593de3ea72b02478db8f81a5cf60885c6279ca515a0c1204368/nostr_agent_tools-0.3.4.tar.gz", hash = "sha256:3c3e04b9e28501f836d251d03b19a7ec680d62697b7014a90312e6441c326bb4", size = 10858 }
+sdist = { url = "https://files.pythonhosted.org/packages/62/6e/d9c8a688e893df02e7a8b85bea8601c445c67d1dd7cd16c5073dd8390561/nostr_agent_tools-0.3.6.tar.gz", hash = "sha256:67f2294252e047628873ba62267f34482f43f1e5ee1d173572dc96add9ad44fd", size = 10865 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/91/3c/1f789fc86c41ae4592905da2acc1b73c57837dd759d935eb443b1c87e0b2/nostr_agent_tools-0.3.4-py3-none-any.whl", hash = "sha256:cc1ca0befc999b161db5a214c0a58199eaf43b1bec38ecc41c7c1acecb91289a", size = 14118 },
+    { url = "https://files.pythonhosted.org/packages/ae/d7/4a2799293b4f1de1e1d13277299158e1a3d10a2e48b8e018a10321265a26/nostr_agent_tools-0.3.6-py3-none-any.whl", hash = "sha256:5cb73a74a69c27cd8562d35cc0fe13354a58e3e24c060e55e8f45a4af50a3209", size = 14130 },
 ]
 
 [[package]]
@@ -611,7 +615,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "fastapi" },
     { name = "langchain-anthropic" },
-    { name = "langchain-mcp-adapters" },
+    { name = "langchain-nostr-mcp-adapters" },
     { name = "langgraph" },
     { name = "nostr-agent-tools" },
     { name = "pynostr" },
@@ -622,9 +626,9 @@ dependencies = [
 requires-dist = [
     { name = "fastapi", specifier = ">=0.115.12" },
     { name = "langchain-anthropic", specifier = ">=0.3.13" },
-    { name = "langchain-mcp-adapters", git = "https://github.com/ehallmark/langchain-mcp-adapters?rev=nostr" },
+    { name = "langchain-nostr-mcp-adapters", specifier = ">=0.0.1" },
     { name = "langgraph", specifier = ">=0.4.3" },
-    { name = "nostr-agent-tools", specifier = ">=0.3.4" },
+    { name = "nostr-agent-tools", specifier = ">=0.3.6" },
     { name = "pynostr", specifier = ">=0.6.2" },
     { name = "uvicorn", specifier = ">=0.34.2" },
 ]

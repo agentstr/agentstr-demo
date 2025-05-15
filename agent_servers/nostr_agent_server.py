@@ -22,5 +22,5 @@ if __name__ == "__main__":
 
     # Create an instance of NostrClient
     client = NostrClient(relays, private_key, nwc_str)
-    server = NostrAgentServer("MCP Agent", agent_url, 0, client)
+    server = NostrAgentServer(agent_url, 0, client)
     server.start()
