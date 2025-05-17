@@ -660,7 +660,7 @@ wheels = [
 
 [[package]]
 name = "nostr-agent-tools"
-version = "0.4.6"
+version = "0.4.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "bolt11" },
@@ -670,9 +670,9 @@ dependencies = [
     { name = "python-dotenv" },
     { name = "secp256k1" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/35/47/2aaffa4bd4b1f152e3f379909aae2badd53cb9688899e99f5f0f2e3f35aa/nostr_agent_tools-0.4.6.tar.gz", hash = "sha256:deb1881e3d4352badb902b74c1afe33e4acd87f30735f1d7057bcb068b0d18d2", size = 11220 }
+sdist = { url = "https://files.pythonhosted.org/packages/77/e9/a3f512badf07cbfb38d41e66db3f02c4e23df67b0d2a3c51b70e541f7e55/nostr_agent_tools-0.4.8.tar.gz", hash = "sha256:0145602f02c05e91c4647f617b083575018f88297b36dd74b857593b13f854eb", size = 11223 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/2d/d4/97574243eb16795c5e0fb3091c39b63d53ecbd724d566ca83bb77b8bd0af/nostr_agent_tools-0.4.6-py3-none-any.whl", hash = "sha256:52b0750bb47ff30e53333f2b38ce1393cfade9870bdefbd942ada6efde65a95e", size = 14487 },
+    { url = "https://files.pythonhosted.org/packages/f0/2e/b10fceffdabea651e735d734c6c200b2f21d1f6f20b7754f51545498f793/nostr_agent_tools-0.4.8-py3-none-any.whl", hash = "sha256:3e56ff729e808da9a42ef0cc7fe48439d09f4a02a9d9aa0099a4cbf3636a69a6", size = 14487 },
 ]
 
 [[package]]
@@ -695,7 +695,7 @@ requires-dist = [
     { name = "langchain-anthropic", specifier = ">=0.3.13" },
     { name = "langchain-nostr-mcp-adapters", specifier = ">=0.0.2" },
     { name = "langgraph", specifier = ">=0.4.3" },
-    { name = "nostr-agent-tools", specifier = ">=0.4.6" },
+    { name = "nostr-agent-tools", specifier = ">=0.4.8" },
     { name = "pynostr", specifier = ">=0.6.2" },
     { name = "uvicorn", specifier = ">=0.34.2" },
 ]
