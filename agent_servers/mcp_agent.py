@@ -1,4 +1,6 @@
 import os
+import uuid
+from typing import Optional
 from fastapi import FastAPI
 from pynostr.key import PrivateKey
 from pydantic import BaseModel
@@ -21,17 +23,17 @@ def _ensure_env(var: str):
 _ensure_env("ANTHROPIC_API_KEY")
 
 model = ChatAnthropic(temperature=0, model_name="claude-3-7-sonnet-latest")
+ml_models = {}
 
 
-@asynccontextmanager
-async def get_tools():
+async def mcp_client():
     relays = os.getenv('NOSTR_RELAYS').split(',')
     private_key = os.getenv('AGENT_PRIVATE_KEY')
     current_datetime_mcp_server_public_key = PrivateKey.from_nsec(os.getenv('MCP_DATETIME_PRIVATE_KEY')).public_key.bech32()
     exchange_rate_mcp_server_public_key = PrivateKey.from_nsec(os.getenv('MCP_EXCHANGE_RATE_PRIVATE_KEY')).public_key.bech32()
     math_mcp_server_public_key = PrivateKey.from_nsec(os.getenv('MCP_MATH_PRIVATE_KEY')).public_key.bech32()
-    nwc_str = os.getenv('NWC_CONN_STR')
-    async with MultiServerMCPClient(
+    nwc_str = os.getenv('AGENT_NWC_CONN_STR')
+    client = MultiServerMCPClient(
         {
             "current_datetime": {
                 "relays": relays,
@@ -55,15 +57,13 @@ async def get_tools():
                 "transport": "nostr",
             },
         }
-    ) as client:
-        yield client.get_tools()
+    )
 
-
-@asynccontextmanager
-async def mcp_client():
-    async with get_tools() as tools:
-        agent = create_react_agent(model, tools, checkpointer=MemorySaver())
-        yield agent
+    connections = client.connections or {}
+    client.connections = connections
+    for server_name, connection in connections.items():
+        await client.connect_to_server(server_name, **connection)
+    return client
 
 
 class Skill(BaseModel):
@@ -85,27 +85,39 @@ class AgentInfo(BaseModel):
 
 class ChatInput(BaseModel):
     messages: list[str]
-    thread_id: str
+    thread_id: Optional[str] = None
 
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Load the ML model
+    client = await mcp_client()
+    tools = client.get_tools()
+    agent = create_react_agent(model, tools, checkpointer=MemorySaver())
+    skills = [Skill(
+                name=tool.name,
+                description=tool.description,
+            ) for tool in tools]
+    ml_models["agent"] = agent
+    ml_models["skills"] = skills
+    yield
+    # Clean up the ML models and release the resources
+    await client.exit_stack.aclose()
+    ml_models.clear()
+
+
+app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/info")
 async def info():
-    async def get_skills():
-        async with get_tools() as tools:
-            return [Skill(
-                    name=tool.name,
-                    description=tool.description,
-                ) for tool in tools]
-    skills = await get_skills()
     return AgentInfo(
         name='Nostr MCP Agent',
         description=('This agent can check the current date and time, '
                      'perform basic mathematical operations, '
                      'and get the exchange rate between two currencies.'),
-        skills=skills,
+        skills=ml_models['skills'],
         satoshis=50,
         nostr_pubkey=PrivateKey.from_nsec(os.getenv('AGENT_PRIVATE_KEY')).public_key.bech32(),
     ).model_dump()
@@ -113,7 +125,24 @@ async def info():
 
 @app.post("/chat")
 async def chat(input: ChatInput):
-    config = {"configurable": {"thread_id": input.thread_id}}
-    async with mcp_client() as graph:
-        response = await graph.ainvoke({"messages": input.messages}, config=config)
+    config = {"configurable": {"thread_id": input.thread_id or str(uuid.uuid4())}}
+    print(f'Found request: {input.messages[-1]}')
+    response = await ml_models['agent'].ainvoke({"messages": input.messages[-1]}, config=config)
     return response["messages"][-1].content
+
+
+if __name__ == '__main__':
+    import asyncio
+    import uuid
+    config = {"configurable": {"thread_id": str(uuid.uuid4())}}
+
+    async def run():
+        client = await mcp_client()
+        tools = client.get_tools()
+        agent = create_react_agent(model, tools, checkpointer=MemorySaver())
+        async for output in agent.astream({"messages": "what's the weather in portland?"}, stream_mode="updates", config=config):
+            print(output)
+        async for output in agent.astream({"messages": "what's the current date and time?"}, stream_mode="updates", config=config):
+            print(output)
+
+    asyncio.run(run())

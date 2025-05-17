@@ -2,13 +2,13 @@
 name = "nostr-ai"
 version = "0.1.0"
 description = "Decentralized AI agent using NOSTR and MCP"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 dependencies = [
+    "nostr-agent-tools>=0.4.6",
+    "langchain-nostr-mcp-adapters>=0.0.2",
     "fastapi>=0.115.12",
     "langchain-anthropic>=0.3.13",
     "langgraph>=0.4.3",
-    "nostr-agent-tools>=0.3.6",
-    "langchain-nostr-mcp-adapters>=0.0.1",
     "pynostr>=0.6.2",
     "uvicorn>=0.34.2",
 ]

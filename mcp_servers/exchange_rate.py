@@ -12,7 +12,7 @@ if __name__ == "__main__":
     # Get the environment variables
     relays = os.getenv('NOSTR_RELAYS').split(',')
     private_key = os.getenv('MCP_EXCHANGE_RATE_PRIVATE_KEY')
-    nwc_str = os.getenv('NWC_CONN_STR')
+    nwc_str = os.getenv('MCP_EXCHANGE_RATE_NWC_CONN_STR')
 
 
     def get_exchange_rate(
@@ -53,7 +53,7 @@ if __name__ == "__main__":
     # Create an instance of NostrClient
     client = NostrClient(relays, private_key, nwc_str)
     server = NostrMCPServer("Exchange Rate MCP Server", client)
-    server.add_tool(get_exchange_rate, satoshis=10)  # Specify price in satoshis
+    server.add_tool(get_exchange_rate, satoshis=3)  # Specify price in satoshis
 
     server.start()
 

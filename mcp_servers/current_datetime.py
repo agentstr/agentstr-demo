@@ -12,7 +12,6 @@ if __name__ == "__main__":
     # Get the environment variables
     relays = os.getenv('NOSTR_RELAYS').split(',')
     private_key = os.getenv('MCP_DATETIME_PRIVATE_KEY')
-    nwc_str = os.getenv('NWC_CONN_STR')
 
     def get_current_datetime() -> str:
         """Gets the current date and time"""
@@ -27,7 +26,7 @@ if __name__ == "__main__":
         return time.strftime("%H:%M:%S")
 
     # Create an instance of NostrClient
-    client = NostrClient(relays, private_key, nwc_str)
+    client = NostrClient(relays, private_key, None)
     server = NostrMCPServer("Current Datetime Server", client)
     server.add_tool(get_current_datetime)
     server.add_tool(get_current_date)

@@ -10,7 +10,6 @@ if __name__ == "__main__":
     # Get the environment variables
     relays = os.getenv('NOSTR_RELAYS').split(',')
     private_key = os.getenv('MCP_MATH_PRIVATE_KEY')
-    nwc_str = os.getenv('NWC_CONN_STR')
 
 
     def add(a: int, b: int) -> int:
@@ -30,7 +29,7 @@ if __name__ == "__main__":
         return a // b
 
     # Create an instance of NostrClient
-    client = NostrClient(relays, private_key, nwc_str)
+    client = NostrClient(relays, private_key, None)
     server = NostrMCPServer("Math MCP Server", client)
     server.add_tool(add)  # Add by signature alone
     server.add_tool(multiply, name="multiply", description="Multiply two numbers")  # Add by signature and name
