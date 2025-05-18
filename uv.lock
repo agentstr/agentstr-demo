@@ -525,16 +525,16 @@ wheels = [
 
 [[package]]
 name = "langchain-nostr-mcp-adapters"
-version = "0.0.2"
+version = "0.0.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "langchain-core" },
     { name = "mcp" },
     { name = "nostr-agent-tools" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ee/f1/06c8cce2bb4a5c158a6b66e6c9c8ff5e2829d199a557979ee8a08c2834fa/langchain_nostr_mcp_adapters-0.0.2.tar.gz", hash = "sha256:da6aedb8595d646efad079ad28cdf854cef58a6e08e7026fcef5a74f3b379d8e", size = 16077 }
+sdist = { url = "https://files.pythonhosted.org/packages/a2/20/0af72c85fc53cd6e5cfcf04d6f0b9efa5662ac35c78c4eb06b645d1622aa/langchain_nostr_mcp_adapters-0.0.3.tar.gz", hash = "sha256:621c9a7922322c6ae69e8cc727b36f274f35871c8e7b7b25ee86dedeab0f087a", size = 16052 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/16/7b/81c4dfd4430dce669cb1ce4812eff92bf822afafdbbe5be7a37ad0f4cfc3/langchain_nostr_mcp_adapters-0.0.2-py3-none-any.whl", hash = "sha256:c8e268e13b6a0f535e8891df038f84154a57ef10951992ee72d365f3e5a34940", size = 11767 },
+    { url = "https://files.pythonhosted.org/packages/99/bb/d839786d8b5917f556d530db80790a3ed4920cf97a500ab1b3d72d9cf6b6/langchain_nostr_mcp_adapters-0.0.3-py3-none-any.whl", hash = "sha256:f1b8776106c4a48b8e4932812d2f40f9eb902164ac3cd8026e80df3f333c2f2c", size = 11770 },
 ]
 
 [[package]]
@@ -660,7 +660,7 @@ wheels = [
 
 [[package]]
 name = "nostr-agent-tools"
-version = "0.4.8"
+version = "0.5.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "bolt11" },
@@ -670,9 +670,9 @@ dependencies = [
     { name = "python-dotenv" },
     { name = "secp256k1" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/77/e9/a3f512badf07cbfb38d41e66db3f02c4e23df67b0d2a3c51b70e541f7e55/nostr_agent_tools-0.4.8.tar.gz", hash = "sha256:0145602f02c05e91c4647f617b083575018f88297b36dd74b857593b13f854eb", size = 11223 }
+sdist = { url = "https://files.pythonhosted.org/packages/a4/fa/3ab9df6c4fb643e885e6b48ff75a6c9df4d12d47a78baaa340c6cd498440/nostr_agent_tools-0.5.0.tar.gz", hash = "sha256:b02ada270e9f8e0d1a7ab2545d931adfaa6e9b9b56d7157e3abf3207037cd336", size = 11399 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f0/2e/b10fceffdabea651e735d734c6c200b2f21d1f6f20b7754f51545498f793/nostr_agent_tools-0.4.8-py3-none-any.whl", hash = "sha256:3e56ff729e808da9a42ef0cc7fe48439d09f4a02a9d9aa0099a4cbf3636a69a6", size = 14487 },
+    { url = "https://files.pythonhosted.org/packages/c5/44/6fce7cb6de759defad6c22ad098c67cdc1fe3bfbfe2ef5bc077de68b9692/nostr_agent_tools-0.5.0-py3-none-any.whl", hash = "sha256:008053790c52379bf700a9e183fa470d2588454a65236a9a73558f367c5e73e2", size = 14837 },
 ]
 
 [[package]]
@@ -693,9 +693,9 @@ dependencies = [
 requires-dist = [
     { name = "fastapi", specifier = ">=0.115.12" },
     { name = "langchain-anthropic", specifier = ">=0.3.13" },
-    { name = "langchain-nostr-mcp-adapters", specifier = ">=0.0.2" },
+    { name = "langchain-nostr-mcp-adapters", specifier = ">=0.0.3" },
     { name = "langgraph", specifier = ">=0.4.3" },
-    { name = "nostr-agent-tools", specifier = ">=0.4.8" },
+    { name = "nostr-agent-tools", specifier = ">=0.5.0" },
     { name = "pynostr", specifier = ">=0.6.2" },
     { name = "uvicorn", specifier = ">=0.34.2" },
 ]

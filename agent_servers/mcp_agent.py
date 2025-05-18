@@ -1,14 +1,15 @@
 import os
-import uuid
+import asyncio
 from typing import Optional
 from fastapi import FastAPI
 from pynostr.key import PrivateKey
 from pydantic import BaseModel
 from contextlib import asynccontextmanager
-from langchain_mcp_adapters.client import MultiServerMCPClient
+from langchain_mcp_adapters.client import MultiServerMCPClient, NostrConnection
 from langchain_anthropic import ChatAnthropic
 from langgraph.prebuilt import create_react_agent
 from langgraph.checkpoint.memory import MemorySaver
+from nostr_agents.nostr_client import NostrClient
 from dotenv import load_dotenv
 
 
@@ -27,38 +28,22 @@ ml_models = {}
 
 
 async def mcp_client():
-    relays = os.getenv('NOSTR_RELAYS').split(',')
     private_key = os.getenv('AGENT_PRIVATE_KEY')
-    current_datetime_mcp_server_public_key = PrivateKey.from_nsec(os.getenv('MCP_DATETIME_PRIVATE_KEY')).public_key.bech32()
-    exchange_rate_mcp_server_public_key = PrivateKey.from_nsec(os.getenv('MCP_EXCHANGE_RATE_PRIVATE_KEY')).public_key.bech32()
-    math_mcp_server_public_key = PrivateKey.from_nsec(os.getenv('MCP_MATH_PRIVATE_KEY')).public_key.bech32()
+    relays = os.getenv('NOSTR_RELAYS').split(',')
     nwc_str = os.getenv('AGENT_NWC_CONN_STR')
-    client = MultiServerMCPClient(
-        {
-            "current_datetime": {
-                "relays": relays,
-                "server_public_key": current_datetime_mcp_server_public_key,
-                "private_key": private_key,
-                "nwc_str": nwc_str,
-                "transport": "nostr",
-            },
-            "exchange_rate": {
-                "relays": relays,
-                "server_public_key": exchange_rate_mcp_server_public_key,
-                "private_key": private_key,
-                "nwc_str": nwc_str,
-                "transport": "nostr",
-            },
-            "math": {
-                "relays": relays,
-                "server_public_key": math_mcp_server_public_key,
-                "private_key": private_key,
-                "nwc_str": nwc_str,
-                "transport": "nostr",
-            },
-        }
-    )
-
+    nostr_client = NostrClient(relays, private_key, nwc_str)
+    mcp_servers = await asyncio.to_thread(nostr_client.read_posts_by_tag,
+                                          os.getenv('NOSTR_MCP_TOOL_DISCOVERY_TAG'))
+    mcp_connections: dict[str, NostrConnection] = {
+        mcp_server['pubkey']: NostrConnection(
+            relays=[tag[1] for tag in mcp_server['tags'] if tag[0] == 'r'],
+            server_public_key= mcp_server['pubkey'],
+            private_key=private_key,
+            nwc_str=nwc_str,
+            transport="nostr",
+        ) for mcp_server in mcp_servers
+    }
+    client = MultiServerMCPClient(mcp_connections)
     connections = client.connections or {}
     client.connections = connections
     for server_name, connection in connections.items():
@@ -132,7 +117,6 @@ async def chat(input: ChatInput):
 
 
 if __name__ == '__main__':
-    import asyncio
     import uuid
     config = {"configurable": {"thread_id": str(uuid.uuid4())}}
 
