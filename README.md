@@ -1,16 +1,38 @@
-# Nostr AI Agents
+# Agentstr Demo
 
-This repository contains a collection of Python scripts implementing Langgraph Agents and Model Context Protocol (MCP) servers and clients. The system leverages the Nostr protocol for decentralized communication, integrates Nostr Wallet Connect (NWC) for Lightning Network payments, and provides tools for tasks like basic math, exchange rates, datetime queries, and agent-based chat interactions. Below is an overview of the files and their purposes.
+## Design and Build Nostr AI Agents 🤖⚡
 
-## Prerequisites
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-- Python 3.11+
-- `uv` package manager
-- Dependencies listed in `requirements.txt` (e.g., `pynostr`, `bolt11`, `httpx`, `fastapi`, `langchain`, etc.)
-- A `.env` file with environment variables (see individual files for specific variables like `NOSTR_RELAYS`, `AGENT_PRIVATE_KEY`, etc.)
-- Access to Nostr relays and a Lightning wallet supporting NWC
+A decentralized AI agent system built on Nostr and Lightning Network, using the Agentstr SDK, featuring MCP servers and Langgraph agents.
 
-## Agent Server
+## 🚀 Features
+
+- 🤖 Langgraph Agents with MCP integration
+- ⚡ Lightning Network payments via Nostr Wallet Connect
+- 🌐 Decentralized communication using Nostr protocol
+- 🧮 Built-in tools for math, exchange rates, and datetime queries
+- 🔐 Secure, private key-based authentication
+
+## 🛠️ Prerequisites
+
+Before you begin, ensure you have the following:
+
+- 🐍 Python 3.11 or higher
+- 💎 `uv` package manager
+- 📦 Dependencies from `pyproject.toml`:
+  - `agentstr-sdk`
+  - `pynostr`
+  - `bolt11`
+  - `fastapi`
+  - `langchain`
+  - And more...
+- 🔑 A `.env` file with required environment variables
+- 📡 Access to Nostr relays
+- 💰 A Lightning wallet supporting NWC
+
+## 🤖 Agent Server
 
 ### 1. `agent_servers/mcp_agent_api.py`
 A FastAPI application providing an API for an MCP agent with tool integration.
@@ -40,8 +62,7 @@ A script to start a `NostrAgentServer` for listening to Nostr messages.
   uv run agent_servers/nostr_agent_listener.py
   ```
   
-## MCP Servers
-
+## ⚡ MCP Servers
 
 ### 1. `mcp_servers/exchange_rate.py`
 A script running an MCP server for exchange rate queries.
@@ -82,7 +103,7 @@ A script running an MCP server for datetime queries.
   {"action": "call_tool", "tool_name": "get_current_date", "arguments": {}}
   ```
 
-## Setup Instructions
+## 🛠️ Setup Instructions
 
 1. **Clone the Repository**:
    ```bash
@@ -122,14 +143,14 @@ A script running an MCP server for datetime queries.
 
 `./scripts/run_mcp_agent_listener.sh`
 
-## Notes
+## ⚠️ Notes
 
 - Each MCP Server requires its own Nostr private key
 - Ensure Nostr relays are accessible and reliable.
 - Payment-related operations require a valid NWC connection string.
-- Some tools (e.g., `get_exchange_rate`) rely on external APIs; ensure network access.
+- The `nostr_rag.py` server requires the agentstr-sdk package and its dependencies.
 - The `mcp_agent_api.py` script requires an Anthropic API key for the Claude model.
 
-## License
+## 📄 License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
