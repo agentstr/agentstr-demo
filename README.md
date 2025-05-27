@@ -1,5 +1,7 @@
 # Agentstr Demo
 
+### See the demo in action [here](https://agentstr.com/demo)
+
 ## Design and Build Nostr AI Agents 🤖⚡
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
@@ -139,6 +141,12 @@ A script running an MCP server for datetime queries.
 
 `./scripts/run_mcp_server_math.sh`
 
+`./scripts/run_mcp_server_rag.sh`
+
+`./scripts/run_mcp_server_tavily.sh`
+
+`./scripts/run_mcp_server_python.sh`
+
 `./scripts/run_mcp_agent_api.sh`
 
 `./scripts/run_mcp_agent_listener.sh`
@@ -149,7 +157,7 @@ A script running an MCP server for datetime queries.
 - Ensure Nostr relays are accessible and reliable.
 - Payment-related operations require a valid NWC connection string.
 - The `nostr_rag.py` server requires the agentstr-sdk package and its dependencies.
-- The `mcp_agent_api.py` script requires an Anthropic API key for the Claude model.
+- The `mcp_agent_api.py` script requires an LLM API Key and base url.
 
 ## 📄 License
 

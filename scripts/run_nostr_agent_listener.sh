@@ -1,1 +1,0 @@
-uv run agent_servers/nostr_agent_listener.py

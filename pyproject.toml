@@ -1,16 +1,18 @@
 [project]
 name = "nostr-ai"
 version = "0.1.0"
-description = "Decentralized AI agent using NOSTR and MCP"
+description = "Decentralized AI agent using Nostr and MCP"
 requires-python = ">=3.11"
 dependencies = [
-    "agentstr-sdk>=0.0.4",
+    "agentstr-sdk>=0.0.5",
     "fastapi>=0.115.12",
-    "langchain-anthropic>=0.3.13",
     "langgraph>=0.4.3",
     "pynostr>=0.6.2",
     "uvicorn>=0.34.2",
     "nostr-langchain-mcp>=0.0.1",
+    "langchain-sandbox>=0.0.6",
+    "tavily-python>=0.7.3",
+    "langchain-openai>=0.3.18",
 ]
 
 [tool.uv]

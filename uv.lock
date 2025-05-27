@@ -9,7 +9,7 @@ resolution-markers = [
 
 [[package]]
 name = "agentstr-sdk"
-version = "0.0.4"
+version = "0.0.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "bolt11" },
@@ -22,9 +22,9 @@ dependencies = [
     { name = "python-dotenv" },
     { name = "secp256k1" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ac/7a/adc41f9906a9b88564b32b262af7dd6e8d1e1a214b8bc4b786b295a0bb9a/agentstr_sdk-0.0.4.tar.gz", hash = "sha256:fee1f3f13af38ecf2da31fd24832403ecace5bcdf0482f5f911c6052674f069b", size = 16831 }
+sdist = { url = "https://files.pythonhosted.org/packages/ea/42/9c307c33f6e204b9de3b464a960c339938bd5c065c9d346709d65af16685/agentstr_sdk-0.0.5.tar.gz", hash = "sha256:64e994efa1ccd657d937cd4e41e49d1c575d0049819f9744078c4b46ff319085", size = 17870 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/56/42/335f8f7620da5fa0d4e1788789a20cecac48bf8a1dcd981277417bff830a/agentstr_sdk-0.0.4-py3-none-any.whl", hash = "sha256:9c56c186e4de66bed571b111cee75d2fb339b5edb95416338959f3e57648224f", size = 19584 },
+    { url = "https://files.pythonhosted.org/packages/ca/cf/420b1bd25468c41b1e15993479974faafec02056c6c25fbca2193fdf9828/agentstr_sdk-0.0.5-py3-none-any.whl", hash = "sha256:d4751f0ba5fa08a325a1a0051029d617e5d7cc8c90d3274bc60d4009a8d23774", size = 20215 },
 ]
 
 [[package]]
@@ -123,24 +123,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/ee/67/531ea369ba64dcff5ec9c3402f9f51bf748cec26dde048a2f973a4eea7f5/annotated_types-0.7.0.tar.gz", hash = "sha256:aff07c09a53a08bc8cfccb9c85b05f1aa9a2a6f23728d790723543408344ce89", size = 16081 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/78/b6/6307fbef88d9b5ee7421e68d78a9f162e0da4900bc5f5793f6d3d0e34fb8/annotated_types-0.7.0-py3-none-any.whl", hash = "sha256:1f02e8b43a8fbbc3f3e0d4f0f4bfc8131bcb4eebe8849b8e5c773f3a1c582a53", size = 13643 },
-]
-
-[[package]]
-name = "anthropic"
-version = "0.51.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "anyio" },
-    { name = "distro" },
-    { name = "httpx" },
-    { name = "jiter" },
-    { name = "pydantic" },
-    { name = "sniffio" },
-    { name = "typing-extensions" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/63/4a/96f99a61ae299f9e5aa3e765d7342d95ab2e2ba5b69a3ffedb00ef779651/anthropic-0.51.0.tar.gz", hash = "sha256:6f824451277992af079554430d5b2c8ff5bc059cc2c968cdc3f06824437da201", size = 219063 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/8c/6e/9637122c5f007103bd5a259f4250bd8f1533dd2473227670fd10a1457b62/anthropic-0.51.0-py3-none-any.whl", hash = "sha256:b8b47d482c9aa1f81b923555cebb687c2730309a20d01be554730c8302e0f62a", size = 263957 },
 ]
 
 [[package]]
@@ -762,20 +744,6 @@ wheels = [
 ]
 
 [[package]]
-name = "langchain-anthropic"
-version = "0.3.13"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "anthropic" },
-    { name = "langchain-core" },
-    { name = "pydantic" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/42/46/f26b8b21f528d7011ba6d614f12f83cf94503ad9eaf036daaea2309c72da/langchain_anthropic-0.3.13.tar.gz", hash = "sha256:12f10fc23fe324fa05bfd608ae96b80e6df3525e79f9f24da93863356a88a5a2", size = 45730 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/04/7d/39864c33a7c3c0fb9a05eb17c05214f60a4223568b7a1f15055702335afb/langchain_anthropic-0.3.13-py3-none-any.whl", hash = "sha256:2a3041ed530c7e3d3f486ce48d926c5e8173376e2b6a00da03ef83a3f8e7ba7f", size = 26131 },
-]
-
-[[package]]
 name = "langchain-community"
 version = "0.3.24"
 source = { registry = "https://pypi.org/simple" }
@@ -828,6 +796,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/77/09/0c3332bf1f53b6e90a06eaac7c7b94898769157bfc41f2c116136559791e/langchain_openai-0.3.18.tar.gz", hash = "sha256:8e0769e4042de099a6217bbdccf7cc06b14c462e900424cbfc340c5f46f079ba", size = 273282 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/58/3a/312c543281021fb4b22c0bc300d525b3a77696b427d87a7d484754929eae/langchain_openai-0.3.18-py3-none-any.whl", hash = "sha256:1687b972a6f6ac125cb8b23c0043278ab3bce031983ef9b32c1277155f88a03e", size = 63393 },
+]
+
+[[package]]
+name = "langchain-sandbox"
+version = "0.0.6"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "langchain-core" },
+    { name = "langgraph" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/10/a0/0b654bccd20ef20aeb9365e52223f96732899012776f0decb879523cd7d4/langchain_sandbox-0.0.6.tar.gz", hash = "sha256:e5b0f819e96ea394d66fdcb8508180bf8ba146404ae9a043535ab1a70d004396", size = 80017 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/be/e4/503a0939e777ee1cef207d0d32e6b66660447f81bd4f9c7dfb00b5538325/langchain_sandbox-0.0.6-py3-none-any.whl", hash = "sha256:793fb7ca8eca2e075d49912085dad5453a083789bb8fdb682290f49db36ba2ba", size = 9865 },
 ]
 
 [[package]]
@@ -1068,21 +1049,25 @@ source = { virtual = "." }
 dependencies = [
     { name = "agentstr-sdk" },
     { name = "fastapi" },
-    { name = "langchain-anthropic" },
+    { name = "langchain-openai" },
+    { name = "langchain-sandbox" },
     { name = "langgraph" },
     { name = "nostr-langchain-mcp" },
     { name = "pynostr" },
+    { name = "tavily-python" },
     { name = "uvicorn" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "agentstr-sdk", specifier = ">=0.0.4" },
+    { name = "agentstr-sdk", specifier = ">=0.0.5" },
     { name = "fastapi", specifier = ">=0.115.12" },
-    { name = "langchain-anthropic", specifier = ">=0.3.13" },
+    { name = "langchain-openai", specifier = ">=0.3.18" },
+    { name = "langchain-sandbox", specifier = ">=0.0.6" },
     { name = "langgraph", specifier = ">=0.4.3" },
     { name = "nostr-langchain-mcp", specifier = ">=0.0.1" },
     { name = "pynostr", specifier = ">=0.6.2" },
+    { name = "tavily-python", specifier = ">=0.7.3" },
     { name = "uvicorn", specifier = ">=0.34.2" },
 ]
 
@@ -1718,6 +1703,20 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/ce/20/08dfcd9c983f6a6f4a1000d934b9e6d626cff8d2eeb77a89a68eef20a2b7/starlette-0.46.2.tar.gz", hash = "sha256:7f7361f34eed179294600af672f565727419830b54b7b084efe44bb82d2fccd5", size = 2580846 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/8b/0c/9d30a4ebeb6db2b25a841afbb80f6ef9a854fc3b41be131d249a977b4959/starlette-0.46.2-py3-none-any.whl", hash = "sha256:595633ce89f8ffa71a015caed34a5b2dc1c0cdb3f0f1fbd1e69339cf2abeec35", size = 72037 },
+]
+
+[[package]]
+name = "tavily-python"
+version = "0.7.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "httpx" },
+    { name = "requests" },
+    { name = "tiktoken" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a7/ee/8a451c724d814d97c1fda8c6203bc9563c7fe104e7c0214f83574326525e/tavily_python-0.7.3.tar.gz", hash = "sha256:f091be8bfed28ab42ff239cf2c46f2ab3715071bf19951900157b3e4a60151c4", size = 16657 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/6f/82/0beda7ea25f1f586b1ae55b1b5399f999171ab12f87db1159fa6f00c2641/tavily_python-0.7.3-py3-none-any.whl", hash = "sha256:ed92e49e5be75a790ff7e36571bdb2982f179b34ca19f91d764ac7368219a8e5", size = 15022 },
 ]
 
 [[package]]

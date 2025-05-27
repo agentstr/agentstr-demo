@@ -6,24 +6,15 @@ from pynostr.key import PrivateKey
 from pydantic import BaseModel
 from contextlib import asynccontextmanager
 from langchain_mcp_adapters.client import MultiServerMCPClient, NostrConnection
-from langchain_anthropic import ChatAnthropic
 from langgraph.prebuilt import create_react_agent
 from langgraph.checkpoint.memory import MemorySaver
 from nostr_agents.nostr_client import NostrClient
 from dotenv import load_dotenv
-
+from langchain_openai import ChatOpenAI
 
 load_dotenv()  # take environment variables from .env.
 
-
-def _ensure_env(var: str):
-    if not os.environ.get(var):
-        raise RuntimeError(f"{var} is not set. Please set it in your environment or .env file.")
-
-
-_ensure_env("ANTHROPIC_API_KEY")
-
-model = ChatAnthropic(temperature=0, model_name="claude-3-7-sonnet-latest")
+model = ChatOpenAI(temperature=0, model_name="claude-3-7-sonnet-latest")
 ml_models = {}
 
 

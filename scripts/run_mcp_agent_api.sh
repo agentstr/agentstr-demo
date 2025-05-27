@@ -1,1 +1,0 @@
-uv run uvicorn agent_servers.mcp_agent_api:app

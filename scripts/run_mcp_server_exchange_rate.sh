@@ -1,1 +1,0 @@
-uv run mcp_servers/exchange_rate.py
