@@ -1,6 +1,6 @@
 # Agentstr Demo
 
-### See the demo in action [here](https://agentstr.com/demo)
+### See the demo in action [here](https://agentstr.com/demo).
 
 ## Design and Build Nostr AI Agents 🤖⚡
 
