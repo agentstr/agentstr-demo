@@ -1,22 +1,24 @@
 # Agentstr Demo
 
-## A Decentralized Gig Economy
+## A Decentralized AI Gig Economy
 
 ### See the demo in action [here](https://agentstr.com/demo).
 
-## Design and Build Nostr AI Agents 🤖⚡
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A decentralized AI agent system built on Nostr and Lightning Network, using the Agentstr SDK, featuring MCP servers and Langgraph agents.
+### What is Agentstr?
+
+Agentstr is a framework for building decentralized AI agents on the Nostr protocol, featuring LangChain and DSPy integrations, with Lightning Network payments via Nostr Wallet Connect.
 
 ## 🚀 Features
 
-- 🤖 Langgraph Agents with MCP integration
+- 🤖 Multiple Agent Backends
+  - Research Agent: Langgraph-based agent with Nostr MCP server integration
+  - Travel Agent: DSPy-based agent for flight booking and management
 - ⚡ Lightning Network payments via Nostr Wallet Connect
 - 🌐 Decentralized communication using Nostr protocol
-- 🧮 Built-in tools for math, exchange rates, and datetime queries
 - 🔐 Secure, private key-based authentication
 
 ## 🛠️ Prerequisites
@@ -32,31 +34,53 @@ Before you begin, ensure you have the following:
   - `fastapi`
   - `langchain`
   - And more...
-- 🔑 A `.env` file with required environment variables
-- 📡 Access to Nostr relays
+- 🔑 Several `.env` files with required environment variables- 📡 Access to Nostr relays
 - 💰 A Lightning wallet supporting NWC
 
-## 🤖 Agent Server
+## 🤖 Agents
 
-### 1. `agent_servers/research/agent.py`
-A Langgraph agent with MCP integration.
+### 1. Research Agent 
+
+[agents/research/agent.py](agents/research/agent.py)
+
+We define a Langgraph-based agent with MCP server integration for general research tasks.
 
 - **Functionality**:
-  - Initialize a `MultiServerMCPClient` to connect to MCP servers via Nostr.
-  - Start a `NostrAgentServer` for listening to Nostr messages.
-  - Expose endpoints:
-    - `/info`: Returns agent information (name, description, skills, etc.).
-    - `/chat`: Handles chat requests with optional thread IDs.
-  - Manage lifecycle with async context (`lifespan`).
-- **Usage**: Runs an API server for agent interactions.
-- **Example**: Run the API:
+  - Initializes a `MultiServerMCPClient` to connect to MCP servers via Nostr
+  - Starts a `NostrAgentServer` for listening to Nostr messages
+  - Exposes endpoints:
+    - `/info`: Returns agent information (name, description, skills, etc.)
+    - `/chat`: Handles chat requests with optional thread IDs
+  - Manages lifecycle with async context (`lifespan`)
+- **Usage**: Run the research agent API server:
   ```bash
-  uv run uvicorn agent_servers.research.agent:app
+  ./scripts/run_agent_research.sh
   ```
-  
+
+### 2. Travel Agent 
+
+[agents/travel/agent.py](agents/travel/agent.py)
+
+A DSPy-based agent specialized in flight booking and management.
+
+- **Functionality**:
+  - Manages flight bookings, cancellations, and itinerary lookups
+  - Integrates with a simulated flight database
+  - Provides a simple API endpoint for interactions
+  - Uses DSPy for natural language understanding and task planning
+- **Features**:
+  - Flight search and booking
+  - Itinerary management
+  - Flight cancellation
+  - User profile integration
+- **Usage**: Run the travel agent server:
+  ```bash
+  ./scripts/run_agent_travel.sh
+  ```
+
 ## ⚡ MCP Servers
 
-### 1. `mcp_servers/bitcoin/server.py`
+#### 1. [mcp_servers/bitcoin/server.py](mcp_servers/bitcoin/server.py)
 A script running an MCP server for Bitcoin-related queries.
 
 - **Functionality**:
@@ -69,7 +93,7 @@ A script running an MCP server for Bitcoin-related queries.
   {"action": "call_tool", "tool_name": "get_market_cap", "arguments": {}}
   ```
 
-### 2. `mcp_servers/nostr_rag/server.py`
+#### 2. [mcp_servers/nostr_rag/server.py](mcp_servers/nostr_rag/server.py)
 A script running an MCP server for Nostr RAG (Retrieval-Augmented Generation).
 
 - **Functionality**:
@@ -83,7 +107,7 @@ A script running an MCP server for Nostr RAG (Retrieval-Augmented Generation).
   {"action": "call_tool", "tool_name": "retrieve", "arguments": {"question": "bitcoin price prediction"}}
   ```
 
-### 3. `mcp_servers/web_search/server.py`
+#### 3. [mcp_servers/web_search/server.py](mcp_servers/web_search/server.py)
 A script running an MCP server for web search capabilities.
 
 - **Functionality**:
@@ -106,31 +130,42 @@ A script running an MCP server for web search capabilities.
 
 2. **Install Dependencies**:
    ```bash
-   uv sync
+   python -m venv .venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   pip install -r requirements.txt
    ```
 
 3. **Configure Environment Variables**:
+   - Copy the `.env.sample` file to `.env` in each agent directory
+   - Update the environment variables with your configuration
 
-   Create a `.env` file in each directory following the .env.sample files.
-   
-4. **Run the demo (each in its own terminal)**:
+4. **Run MCP Servers**:
+   ```bash
+   # In separate terminals
+   ./scripts/run_mcp_server_bitcoin.sh
+   ./scripts/run_mcp_server_nostr_rag.sh
+   ./scripts/run_mcp_server_web_search.sh
+   ```
 
-`./scripts/run_mcp_server_bitcoin.sh`
+5. **Run the Agents**:
 
-`./scripts/run_mcp_server_nostr_rag.sh`
+   For the Research Agent:
+   ```bash
+   ./scripts/run_agent_research.sh
+   ```
 
-`./scripts/run_mcp_server_web_search.sh`
+   For the Travel Agent:
+   ```bash
+   ./scripts/run_agent_travel.sh
+   ```
 
-`./scripts/run_agent_api.sh`
-
-`./scripts/run_agent_listener.sh`
 
 ## ⚠️ Notes
 
-- Each MCP Server requires its own Nostr private key and environment variables (see .env.sample files in each directory)
+- Each Agent and MCP Server requires its own Nostr private key and environment variables (see .env.sample files in each directory)
 - Ensure Nostr relays are accessible and reliable.
 - Payment-related operations require a valid NWC connection string.
-- The `agent_api.py` and `nostr_rag.py` scripts require an LLM API Key and base url (checkout [Routstr](https://routstr.com) for decentralized LLM access).
+- Both agents and the RAG MCP server require an LLM API key and base url (checkout [Routstr](https://routstr.com) for decentralized LLM access).
 
 ## 📄 License
 
