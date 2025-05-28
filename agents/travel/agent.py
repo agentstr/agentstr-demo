@@ -7,6 +7,7 @@ import dspy
 
 YEAR = 2025
 MONTH = 9
+DAY = 1
 
 
 class Date(BaseModel):
@@ -15,7 +16,7 @@ class Date(BaseModel):
     year: int
     month: int
     day: int
-    hour: int
+    hour: int = 12
 
 class Flight(BaseModel):
     flight_id: str
@@ -35,33 +36,113 @@ flight_database = {
         flight_id="DA123",  # DSPy Airline 123
         origin="SFO",
         destination="JFK",
-        date_time=Date(year=YEAR, month=MONTH, day=1, hour=1),
-        duration=3,
-        price=200,
+        date_time=Date(year=YEAR, month=MONTH, day=DAY, hour=6),
+        duration=5.25,
+        price=350,
     ),
     "DA125": Flight(
         flight_id="DA125",
         origin="SFO",
         destination="JFK",
-        date_time=Date(year=YEAR, month=MONTH, day=1, hour=7),
-        duration=9,
-        price=500,
+        date_time=Date(year=YEAR, month=MONTH, day=DAY, hour=9),
+        duration=5.5,
+        price=420,
     ),
     "DA456": Flight(
         flight_id="DA456",
         origin="SFO",
-        destination="SNA",
-        date_time=Date(year=YEAR, month=MONTH, day=1, hour=1),
-        duration=2,
-        price=100,
+        destination="JFK",
+        date_time=Date(year=YEAR, month=MONTH, day=DAY, hour=12),
+        duration=5.25,
+        price=380,
     ),
     "DA460": Flight(
         flight_id="DA460",
         origin="SFO",
-        destination="SNA",
-        date_time=Date(year=YEAR, month=MONTH, day=1, hour=9),
-        duration=2,
-        price=120,
+        destination="JFK",
+        date_time=Date(year=YEAR, month=MONTH, day=DAY, hour=15),
+        duration=5.5,
+        price=400,
+    ),
+    "DA789": Flight(
+        flight_id="DA789",
+        origin="SFO",
+        destination="JFK",
+        date_time=Date(year=YEAR, month=MONTH, day=DAY, hour=18),
+        duration=5.25,
+        price=450,
+    ),
+    "DA101": Flight(
+        flight_id="DA101",
+        origin="SFO",
+        destination="JFK",
+        date_time=Date(year=YEAR, month=MONTH, day=DAY, hour=7),
+        duration=5.5,
+        price=390,
+    ),
+    "DA202": Flight(
+        flight_id="DA202",
+        origin="SFO",
+        destination="JFK",
+        date_time=Date(year=YEAR, month=MONTH, day=DAY, hour=10),
+        duration=5.25,
+        price=410,
+    ),
+    "DA303": Flight(
+        flight_id="DA303",
+        origin="SFO",
+        destination="JFK",
+        date_time=Date(year=YEAR, month=MONTH, day=2, hour=13),
+        duration=5.5,
+        price=370,
+    ),
+    "DA404": Flight(
+        flight_id="DA404",
+        origin="SFO",
+        destination="JFK",
+        date_time=Date(year=YEAR, month=MONTH, day=DAY, hour=16),
+        duration=5.25,
+        price=390,
+    ),
+    "DA505": Flight(
+        flight_id="DA505",
+        origin="SFO",
+        destination="JFK",
+        date_time=Date(year=YEAR, month=MONTH, day=DAY, hour=8),
+        duration=5.5,
+        price=360,
+    ),
+    "DA606": Flight(
+        flight_id="DA606",
+        origin="SFO",
+        destination="JFK",
+        date_time=Date(year=YEAR, month=MONTH, day=DAY, hour=11),
+        duration=5.25,
+        price=380,
+    ),
+    "DA707": Flight(
+        flight_id="DA707",
+        origin="SFO",
+        destination="JFK",
+        date_time=Date(year=YEAR, month=MONTH, day=DAY, hour=14),
+        duration=5.5,
+        price=410,
+    ),
+    "DA808": Flight(
+        flight_id="DA808",
+        origin="SFO",
+        destination="JFK",
+        date_time=Date(year=YEAR, month=MONTH, day=DAY, hour=17),
+        duration=5.25,
+        price=430,
+    ),
+    "DA909": Flight(
+        flight_id="DA909",
+        origin="SFO",
+        destination="JFK",
+        date_time=Date(year=YEAR, month=MONTH, day=DAY, hour=9),
+        duration=5.5,
+        price=400,
     ),
 }
 
