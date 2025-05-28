@@ -8,13 +8,24 @@ from contextlib import asynccontextmanager
 from langchain_mcp_adapters.client import MultiServerMCPClient, NostrConnection
 from langgraph.prebuilt import create_react_agent
 from langgraph.checkpoint.memory import MemorySaver
-from nostr_agents.nostr_client import NostrClient
+from agentstr import NostrClient
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 
-load_dotenv()  # take environment variables from .env.
+load_dotenv()
 
-model = ChatOpenAI(temperature=0, model_name="claude-3-7-sonnet-latest")
+
+# Get the environment variables
+relays = os.getenv('NOSTR_RELAYS').split(',')
+private_key = os.getenv('AGENT_PRIVATE_KEY')
+nwc_str = os.getenv('AGENT_NWC_CONN_STR')
+agent_url = os.getenv('AGENT_URL')
+
+
+model = ChatOpenAI(temperature=0,
+                    base_url=os.getenv('LLM_BASE_URL'),
+                    api_key=os.getenv('LLM_API_KEY'),
+                    model_name=os.getenv('LLM_MODEL_NAME'))
 ml_models = {}
 
 
@@ -75,12 +86,25 @@ async def lifespan(app: FastAPI):
                 name=tool.name,
                 description=tool.description,
             ) for tool in tools]
+    ml_models["agent_info"] = AgentInfo(
+        name='Nostr MCP Agent',
+        description=('This agent can query bitcoin blockchain data, '
+                     'get the exchange rate between two currencies, '
+                     'query Nostr for content, '
+                     'and perform web search.'),
+        skills=skills,
+        satoshis=50,
+        nostr_pubkey=PrivateKey.from_nsec(os.getenv('AGENT_PRIVATE_KEY')).public_key.bech32(),
+    ).model_dump()
     ml_models["agent"] = agent
-    ml_models["skills"] = skills
+
+    server = NostrAgentServer(agent_url, 5, relays=relays, private_key=private_key, nwc_str=nwc_str)
+    server.start()
     yield
     # Clean up the ML models and release the resources
     await client.exit_stack.aclose()
     ml_models.clear()
+    server.stop()
 
 
 app = FastAPI(lifespan=lifespan)
@@ -88,15 +112,7 @@ app = FastAPI(lifespan=lifespan)
 
 @app.get("/info")
 async def info():
-    return AgentInfo(
-        name='Nostr MCP Agent',
-        description=('This agent can check the current date and time, '
-                     'perform basic mathematical operations, '
-                     'and get the exchange rate between two currencies.'),
-        skills=ml_models['skills'],
-        satoshis=50,
-        nostr_pubkey=PrivateKey.from_nsec(os.getenv('AGENT_PRIVATE_KEY')).public_key.bech32(),
-    ).model_dump()
+    return ml_models['agent_info']
 
 
 @app.post("/chat")
@@ -105,6 +121,7 @@ async def chat(input: ChatInput):
     print(f'Found request: {input.messages[-1]}')
     response = await ml_models['agent'].ainvoke({"messages": input.messages[-1]}, config=config)
     return response["messages"][-1].content
+
 
 
 if __name__ == '__main__':

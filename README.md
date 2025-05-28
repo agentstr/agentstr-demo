@@ -1,5 +1,7 @@
 # Agentstr Demo
 
+## A Decentralized Gig Economy
+
 ### See the demo in action [here](https://agentstr.com/demo).
 
 ## Design and Build Nostr AI Agents 🤖⚡
@@ -36,12 +38,12 @@ Before you begin, ensure you have the following:
 
 ## 🤖 Agent Server
 
-### 1. `agent_servers/agent_api.py`
-A FastAPI application providing an API for an MCP agent with tool integration.
+### 1. `agent_servers/research/agent.py`
+A Langgraph agent with MCP integration.
 
 - **Functionality**:
   - Initialize a `MultiServerMCPClient` to connect to MCP servers via Nostr.
-  - Create a LangChain agent with tools using Anthropic's Claude model.
+  - Start a `NostrAgentServer` for listening to Nostr messages.
   - Expose endpoints:
     - `/info`: Returns agent information (name, description, skills, etc.).
     - `/chat`: Handles chat requests with optional thread IDs.
@@ -49,19 +51,7 @@ A FastAPI application providing an API for an MCP agent with tool integration.
 - **Usage**: Runs an API server for agent interactions.
 - **Example**: Run the API:
   ```bash
-  uv run uvicorn agent_servers.agent_api:app
-  ```
-
-### 2. `agent_servers/nostr_listener.py`
-A script to start a `NostrAgentServer` for listening to Nostr messages.
-
-- **Functionality**:
-  - Load environment variables and initialize a `NostrClient`.
-  - Start a `NostrAgentServer` with a specified agent URL and satoshis cost.
-- **Usage**: Entry point to run the agent server.
-- **Example**: Run the listener:
-  ```bash
-  uv run agent_servers/nostr_listener.py
+  uv run uvicorn agent_servers.research.agent:app
   ```
   
 ## ⚡ MCP Servers
