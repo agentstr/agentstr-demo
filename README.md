@@ -140,7 +140,7 @@ A script running an MCP server for web search capabilities.
 - Each MCP Server requires its own Nostr private key and environment variables (see .env.sample files in each directory)
 - Ensure Nostr relays are accessible and reliable.
 - Payment-related operations require a valid NWC connection string.
-- The `agent_api.py` and `nostr_rag.py` scripts require an LLM API Key and base url (checkout [routstr](https://routstr.com) for decentralized LLM access).
+- The `agent_api.py` and `nostr_rag.py` scripts require an LLM API Key and base url (checkout [Routstr](https://routstr.com) for decentralized LLM access).
 
 ## 📄 License
 
