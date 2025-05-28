@@ -1,8 +1,10 @@
 import random
 import string
+from typing import Literal
 from agentstr import AgentCard, Skill
 from pydantic import BaseModel
 import dspy
+import datetime
 
 
 YEAR = 2025
@@ -37,7 +39,7 @@ flight_database = {
         origin="SFO",
         destination="JFK",
         date_time=Date(year=YEAR, month=MONTH, day=DAY, hour=6),
-        duration=5.25,
+        duration=5.9,
         price=350,
     ),
     "DA125": Flight(
@@ -45,7 +47,7 @@ flight_database = {
         origin="SFO",
         destination="JFK",
         date_time=Date(year=YEAR, month=MONTH, day=DAY, hour=9),
-        duration=5.5,
+        duration=4.5,
         price=420,
     ),
     "DA456": Flight(
@@ -61,7 +63,7 @@ flight_database = {
         origin="SFO",
         destination="JFK",
         date_time=Date(year=YEAR, month=MONTH, day=DAY, hour=15),
-        duration=5.5,
+        duration=5,
         price=400,
     ),
     "DA789": Flight(
@@ -109,40 +111,8 @@ flight_database = {
         origin="SFO",
         destination="JFK",
         date_time=Date(year=YEAR, month=MONTH, day=DAY, hour=8),
-        duration=5.5,
+        duration=5.8,
         price=360,
-    ),
-    "DA606": Flight(
-        flight_id="DA606",
-        origin="SFO",
-        destination="JFK",
-        date_time=Date(year=YEAR, month=MONTH, day=DAY, hour=11),
-        duration=5.25,
-        price=380,
-    ),
-    "DA707": Flight(
-        flight_id="DA707",
-        origin="SFO",
-        destination="JFK",
-        date_time=Date(year=YEAR, month=MONTH, day=DAY, hour=14),
-        duration=5.5,
-        price=410,
-    ),
-    "DA808": Flight(
-        flight_id="DA808",
-        origin="SFO",
-        destination="JFK",
-        date_time=Date(year=YEAR, month=MONTH, day=DAY, hour=17),
-        duration=5.25,
-        price=430,
-    ),
-    "DA909": Flight(
-        flight_id="DA909",
-        origin="SFO",
-        destination="JFK",
-        date_time=Date(year=YEAR, month=MONTH, day=DAY, hour=9),
-        duration=5.5,
-        price=400,
     ),
 }
 
@@ -168,18 +138,23 @@ def fetch_flight_info(date: Date, origin: str, destination: str):
     return flights
 
 
-def fetch_itinerary(confirmation_number: str):
-    """Fetch a booked itinerary information from database"""
-    return itinery_database.get(confirmation_number)
+#def fetch_itinerary(confirmation_number: str | None = None):
+#    """Fetch a booked itinerary information from database"""
+#    if len(itinery_database) == 1:
+#        return list(itinery_database.values())[0]
+#    return itinery_database.get(confirmation_number)
 
+def show_itinerary():
+    """Show the itinerary for the user"""
+    return sorted(list(itinery_database.values()), key=lambda x: datetime.datetime(x.date_time.year, x.date_time.month, x.date_time.day, x.date_time.hour))
 
-def pick_flight(flights: list[Flight]):
+def pick_flight(flights: list[Flight], criteria: Literal['shortest', 'cheapest'] = 'shortest') -> Flight:
     """Pick up the best flight that matches users' request. we pick the shortest, and cheaper one on ties."""
     sorted_flights = sorted(
         flights,
         key=lambda x: (
-            x.get("duration") if isinstance(x, dict) else x.duration,
-            x.get("price") if isinstance(x, dict) else x.price,
+            x.get("duration" if criteria == 'shortest' else "price") if isinstance(x, dict) else x.duration,
+            x.get("price" if criteria == 'shortest' else "duration") if isinstance(x, dict) else x.price,
         ),
     )
     return sorted_flights[0]
@@ -190,7 +165,7 @@ def _generate_id(length=8):
     return "".join(random.choices(chars, k=length))
 
 
-def book_flight(flight: Flight, user_profile: UserProfile):
+def book_flight(flight: Flight):
     """Book a flight on behalf of the user."""
     confirmation_number = _generate_id()
     while confirmation_number in itinery_database:
@@ -217,7 +192,8 @@ class DSPyAirlineCustomerSerice(dspy.Signature):
     You are given a list of tools to handle user request, and you should decide the right tool to use in order to
     fullfil users' request."""
 
-    user_request: str = dspy.InputField()
+    user_request: str = dspy.InputField(desc="The user's request")
+    history: dspy.History = dspy.InputField(desc="The conversation history")
     process_result: str = dspy.OutputField(
         desc=(
                 "Message that summarizes the process result, and the information users need, e.g., the "
@@ -230,7 +206,7 @@ agent = dspy.ReAct(
     DSPyAirlineCustomerSerice,
     tools = [
         fetch_flight_info,
-        fetch_itinerary,
+        show_itinerary,
         pick_flight,
         book_flight,
         cancel_itinerary
@@ -257,21 +233,27 @@ if __name__ == "__main__":
     def agent_callable(chat_input: ChatInput) -> str:
         thread_id = chat_input.thread_id or str(uuid.uuid4())
         print(f"Found request: {chat_input.messages[-1]}")
-        if thread_id in message_history:
-            print(f"Found history: {message_history[thread_id]}")
-            history = dspy.History(messages=message_history[thread_id])
-            result = agent(user_request=chat_input.messages[-1], history=history)
-        else:
+        history = dspy.History(messages=message_history.get(thread_id, []))
+        if thread_id not in message_history:
             message_history[thread_id] = []
-            result = agent(user_request=chat_input.messages[-1])
+        result = agent(user_request=chat_input.messages[-1], history=history)
         message_history[thread_id].append({'user_request': chat_input.messages[-1], **result}) 
-        print(result.process_result)       
+        print(f"Result: {result.process_result}")       
         return result.process_result
+
+    #agent_callable(ChatInput(messages=["what's the cheapest flight from SFO to JFK on 9/1/2025?"], thread_id="1"))
+    #agent_callable(ChatInput(messages=["can you book that for me?"], thread_id="1"))
+    #agent_callable(ChatInput(messages=["can you show me my itinerary?"], thread_id="1"))
+    #agent_callable(ChatInput(messages=["can you actually book the shortest flight?"], thread_id="1"))
 
     agent_info = AgentCard(
         name='Travel Agent',
         description=('This agent can help you book and manage flights.'),
-        skills=[Skill(name='book_flight', description='Book a flight on behalf of a user.', satoshis=10)],
+        skills=[Skill(name='book_flight', description='Book a flight on behalf of a user.', satoshis=25),
+                Skill(name='show_itinerary', description='Show the itinerary for the user.', satoshis=0),
+                Skill(name='pick_flight', description='Pick the best flight that matches users\' request.', satoshis=0),
+                Skill(name='cancel_itinerary', description='Cancel an itinerary on behalf of the user.', satoshis=0),
+                ],
         satoshis=0,
         nostr_pubkey=PrivateKey.from_nsec(os.getenv('AGENT_PRIVATE_KEY')).public_key.bech32(),
     )
@@ -292,7 +274,3 @@ if __name__ == "__main__":
                               note_filters=note_filters)
 
     server.start()  
-
-    #agent_callable(ChatInput(messages=["please help me book a flight from SFO to JFK on 09/01/2025, my name is Adam"], thread_id="1"))
-    #agent_callable(ChatInput(messages=["Can you show me my itinerary?"], thread_id="1"))
-
