@@ -33,6 +33,19 @@ def get_block_count() -> str:
     return requests.get(f'{BASE_URL}/getblockcount').text
 
 
+def get_bitcoin_data() -> dict:
+    return {
+        "24hr_price": get_24hr_price(),
+        "market_cap": get_market_cap(),
+        "24hr_transaction_count": get_24hr_transaction_count(),
+        "24hr_btc_sent": get_24hr_btc_sent(),
+        "hashrate": get_hashrate(),
+        "difficulty": get_difficulty(),
+        "block_count": get_block_count(),
+    }
+
+
+
 if __name__ == "__main__":
     import os
     from dotenv import load_dotenv
@@ -45,13 +58,7 @@ if __name__ == "__main__":
 
     server = NostrMCPServer("Bitcoin Data Tool", relays=relays, private_key=private_key)
 
-    server.add_tool(get_24hr_price)
-    server.add_tool(get_market_cap)
-    server.add_tool(get_24hr_transaction_count)
-    server.add_tool(get_24hr_btc_sent)
-    server.add_tool(get_hashrate)
-    server.add_tool(get_difficulty)
-    server.add_tool(get_block_count)
+    server.add_tool(get_bitcoin_data)
 
     server.start()
     

@@ -1,6 +1,9 @@
 import os
+import time
+import threading
 import asyncio
 from typing import Optional
+from agentstr.nostr_agent_server import NoteFilters
 from fastapi import FastAPI
 from pynostr.key import PrivateKey
 from pydantic import BaseModel
@@ -8,7 +11,7 @@ from contextlib import asynccontextmanager
 from langchain_mcp_adapters.client import MultiServerMCPClient, NostrConnection
 from langgraph.prebuilt import create_react_agent
 from langgraph.checkpoint.memory import MemorySaver
-from agentstr import NostrClient
+from agentstr import NostrClient, NostrAgentServer
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 
@@ -30,9 +33,6 @@ ml_models = {}
 
 
 async def mcp_client():
-    private_key = os.getenv('AGENT_PRIVATE_KEY')
-    relays = os.getenv('NOSTR_RELAYS').split(',')
-    nwc_str = os.getenv('AGENT_NWC_CONN_STR')
     nostr_client = NostrClient(relays, private_key, nwc_str)
     mcp_servers = await asyncio.to_thread(nostr_client.read_posts_by_tag,
                                           os.getenv('NOSTR_MCP_TOOL_DISCOVERY_TAG'))
@@ -87,7 +87,7 @@ async def lifespan(app: FastAPI):
                 description=tool.description,
             ) for tool in tools]
     ml_models["agent_info"] = AgentInfo(
-        name='Nostr MCP Agent',
+        name='Research Agent',
         description=('This agent can query bitcoin blockchain data, '
                      'get the exchange rate between two currencies, '
                      'query Nostr for content, '
@@ -95,16 +95,26 @@ async def lifespan(app: FastAPI):
         skills=skills,
         satoshis=50,
         nostr_pubkey=PrivateKey.from_nsec(os.getenv('AGENT_PRIVATE_KEY')).public_key.bech32(),
-    ).model_dump()
+    )
     ml_models["agent"] = agent
 
-    server = NostrAgentServer(agent_url, 5, relays=relays, private_key=private_key, nwc_str=nwc_str)
-    server.start()
+    note_filters = NoteFilters(
+        nostr_pubkeys=['npub1jch03stp0x3fy6ykv5df2fnhtaq4xqvqlmpjdu68raaqcntca5tqahld7a'],
+    )
+    server = NostrAgentServer(agent_url=agent_url,
+                             agent_info=ml_models["agent_info"],
+                             relays=relays,
+                             private_key=private_key,
+                             nwc_str=nwc_str,
+                             note_filters=note_filters)
+
+    thr = threading.Thread(target=server.start)
+    print(f"Starting nostr agent server...")
+    thr.start()
     yield
     # Clean up the ML models and release the resources
     await client.exit_stack.aclose()
     ml_models.clear()
-    server.stop()
 
 
 app = FastAPI(lifespan=lifespan)
@@ -112,7 +122,7 @@ app = FastAPI(lifespan=lifespan)
 
 @app.get("/info")
 async def info():
-    return ml_models['agent_info']
+    return ml_models['agent_info'].model_dump()
 
 
 @app.post("/chat")
@@ -121,20 +131,3 @@ async def chat(input: ChatInput):
     print(f'Found request: {input.messages[-1]}')
     response = await ml_models['agent'].ainvoke({"messages": input.messages[-1]}, config=config)
     return response["messages"][-1].content
-
-
-
-if __name__ == '__main__':
-    import uuid
-    config = {"configurable": {"thread_id": str(uuid.uuid4())}}
-
-    async def run():
-        client = await mcp_client()
-        tools = client.get_tools()
-        agent = create_react_agent(model, tools, checkpointer=MemorySaver())
-        async for output in agent.astream({"messages": "what's the weather in portland?"}, stream_mode="updates", config=config):
-            print(output)
-        async for output in agent.astream({"messages": "what's the current date and time?"}, stream_mode="updates", config=config):
-            print(output)
-
-    asyncio.run(run())

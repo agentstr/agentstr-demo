@@ -10,22 +10,45 @@ resolution-markers = [
 
 [[package]]
 name = "agentstr-sdk"
-version = "0.0.5"
-source = { registry = "https://pypi.org/simple" }
+version = "0.1.1"
+source = { directory = "../nostr-agent-tools" }
 dependencies = [
     { name = "bolt11" },
-    { name = "langchain" },
-    { name = "langchain-community" },
-    { name = "langchain-openai" },
     { name = "mcp", extra = ["cli"] },
     { name = "pycryptodome" },
+    { name = "pydantic" },
     { name = "pynostr", extra = ["websocket-client"] },
     { name = "python-dotenv" },
     { name = "secp256k1" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ea/42/9c307c33f6e204b9de3b464a960c339938bd5c065c9d346709d65af16685/agentstr_sdk-0.0.5.tar.gz", hash = "sha256:64e994efa1ccd657d937cd4e41e49d1c575d0049819f9744078c4b46ff319085", size = 17870 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/ca/cf/420b1bd25468c41b1e15993479974faafec02056c6c25fbca2193fdf9828/agentstr_sdk-0.0.5-py3-none-any.whl", hash = "sha256:d4751f0ba5fa08a325a1a0051029d617e5d7cc8c90d3274bc60d4009a8d23774", size = 20215 },
+
+[package.optional-dependencies]
+rag = [
+    { name = "langchain" },
+    { name = "langchain-community" },
+    { name = "langchain-openai" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "bolt11", specifier = ">=2.1.1" },
+    { name = "langchain", marker = "extra == 'rag'", specifier = ">=0.3.25" },
+    { name = "langchain-community", marker = "extra == 'rag'", specifier = ">=0.3.24" },
+    { name = "langchain-openai", marker = "extra == 'rag'", specifier = ">=0.3.18" },
+    { name = "mcp", extras = ["cli"], specifier = ">=1.6.0" },
+    { name = "pycryptodome", specifier = "==3.10.1" },
+    { name = "pydantic", specifier = ">=2.11.3" },
+    { name = "pynostr", extras = ["websocket-client"], specifier = ">=0.6.2" },
+    { name = "python-dotenv", specifier = ">=1.1.0" },
+    { name = "secp256k1", specifier = ">=0.14.0" },
+]
+provides-extras = ["rag"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "furo", specifier = ">=2024.8.6" },
+    { name = "sphinx", specifier = ">=8.1.3" },
+    { name = "sphinx-rtd-theme", specifier = ">=3.0.2" },
 ]
 
 [[package]]
@@ -1434,7 +1457,7 @@ name = "nostr-ai"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
-    { name = "agentstr-sdk" },
+    { name = "agentstr-sdk", extra = ["rag"] },
     { name = "dspy" },
     { name = "fastapi" },
     { name = "langchain-openai" },
@@ -1449,7 +1472,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "agentstr-sdk", specifier = ">=0.0.5" },
+    { name = "agentstr-sdk", extras = ["rag"], directory = "../nostr-agent-tools" },
     { name = "dspy", specifier = ">=2.6.24" },
     { name = "fastapi", specifier = ">=0.115.12" },
     { name = "langchain-openai", specifier = ">=0.3.18" },

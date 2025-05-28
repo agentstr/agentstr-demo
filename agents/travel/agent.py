@@ -1,7 +1,12 @@
 import random
 import string
+from agentstr import AgentCard, Skill
 from pydantic import BaseModel
 import dspy
+
+
+YEAR = 2025
+MONTH = 9
 
 
 class Date(BaseModel):
@@ -11,11 +16,6 @@ class Date(BaseModel):
     month: int
     day: int
     hour: int
-
-class UserProfile(BaseModel):
-    user_id: str
-    name: str
-    email: str
 
 class Flight(BaseModel):
     flight_id: str
@@ -27,27 +27,15 @@ class Flight(BaseModel):
 
 class Itinerary(BaseModel):
     confirmation_number: str
-    user_profile: UserProfile
     flight: Flight
 
-class Ticket(BaseModel):
-    user_request: str
-    user_profile: UserProfile
-
-
-user_database = {
-    "Adam": UserProfile(user_id="1", name="Adam", email="adam@gmail.com"),
-    "Bob": UserProfile(user_id="2", name="Bob", email="bob@gmail.com"),
-    "Chelsie": UserProfile(user_id="3", name="Chelsie", email="chelsie@gmail.com"),
-    "David": UserProfile(user_id="4", name="David", email="david@gmail.com"),
-}
 
 flight_database = {
     "DA123": Flight(
         flight_id="DA123",  # DSPy Airline 123
         origin="SFO",
         destination="JFK",
-        date_time=Date(year=2025, month=9, day=1, hour=1),
+        date_time=Date(year=YEAR, month=MONTH, day=1, hour=1),
         duration=3,
         price=200,
     ),
@@ -55,7 +43,7 @@ flight_database = {
         flight_id="DA125",
         origin="SFO",
         destination="JFK",
-        date_time=Date(year=2025, month=9, day=1, hour=7),
+        date_time=Date(year=YEAR, month=MONTH, day=1, hour=7),
         duration=9,
         price=500,
     ),
@@ -63,7 +51,7 @@ flight_database = {
         flight_id="DA456",
         origin="SFO",
         destination="SNA",
-        date_time=Date(year=2025, month=10, day=1, hour=1),
+        date_time=Date(year=YEAR, month=MONTH, day=1, hour=1),
         duration=2,
         price=100,
     ),
@@ -71,7 +59,7 @@ flight_database = {
         flight_id="DA460",
         origin="SFO",
         destination="SNA",
-        date_time=Date(year=2025, month=10, day=1, hour=9),
+        date_time=Date(year=YEAR, month=MONTH, day=1, hour=9),
         duration=2,
         price=120,
     ),
@@ -128,33 +116,18 @@ def book_flight(flight: Flight, user_profile: UserProfile):
         confirmation_number = _generate_id()
     itinery_database[confirmation_number] = Itinerary(
         confirmation_number=confirmation_number,
-        user_profile=user_profile,
         flight=flight,
     )
     return confirmation_number, itinery_database[confirmation_number]
 
 
-def cancel_itinerary(confirmation_number: str, user_profile: UserProfile):
+def cancel_itinerary(confirmation_number: str):
     """Cancel an itinerary on behalf of the user."""
     if confirmation_number in itinery_database:
         del itinery_database[confirmation_number]
         return
     raise ValueError("Cannot find the itinerary, please check your confirmation number.")
 
-
-def get_user_info(name: str):
-    """Fetch the user profile from database with given name."""
-    return user_database.get(name)
-
-
-def file_ticket(user_request: str, user_profile: UserProfile):
-    """File a customer support ticket if this is something the agent cannot handle."""
-    ticket_id = _generate_id(length=6)
-    ticket_database[ticket_id] = Ticket(
-        user_request=user_request,
-        user_profile=user_profile,
-    )
-    return ticket_id
 
 
 class DSPyAirlineCustomerSerice(dspy.Signature):
@@ -179,9 +152,7 @@ agent = dspy.ReAct(
         fetch_itinerary,
         pick_flight,
         book_flight,
-        cancel_itinerary,
-        get_user_info,
-        file_ticket,
+        cancel_itinerary
     ]
 )
 
@@ -189,6 +160,8 @@ agent = dspy.ReAct(
 if __name__ == "__main__":
     import os
     from dotenv import load_dotenv
+    from agentstr import ChatInput, NostrAgentServer, NoteFilters
+    from pynostr.key import PrivateKey
 
     load_dotenv()
 
@@ -198,5 +171,47 @@ if __name__ == "__main__":
 
     dspy.configure(lm=dspy.LM(model=llm_model_name, api_base=llm_base_url, api_key=llm_api_key, model_type='chat'))
 
-    result = agent(user_request="please help me book a flight from SFO to JFK on 09/01/2025, my name is Adam")
-    print(result)
+    message_history = {}
+
+    def agent_callable(chat_input: ChatInput) -> str:
+        thread_id = chat_input.thread_id or str(uuid.uuid4())
+        print(f"Found request: {chat_input.messages[-1]}")
+        if thread_id in message_history:
+            print(f"Found history: {message_history[thread_id]}")
+            history = dspy.History(messages=message_history[thread_id])
+            result = agent(user_request=chat_input.messages[-1], history=history)
+        else:
+            message_history[thread_id] = []
+            result = agent(user_request=chat_input.messages[-1])
+        message_history[thread_id].append({'user_request': chat_input.messages[-1], **result}) 
+        print(result.process_result)       
+        return result.process_result
+
+    agent_info = AgentCard(
+        name='Travel Agent',
+        description=('This agent can help you book and manage flights.'),
+        skills=[Skill(name='book_flight', description='Book a flight on behalf of a user.', satoshis=10)],
+        satoshis=0,
+        nostr_pubkey=PrivateKey.from_nsec(os.getenv('AGENT_PRIVATE_KEY')).public_key.bech32(),
+    )
+
+    relays = os.getenv('NOSTR_RELAYS').split(',')
+    private_key = os.getenv('AGENT_PRIVATE_KEY')
+    nwc_str = os.getenv('AGENT_NWC_CONN_STR')
+
+    note_filters = NoteFilters(
+        nostr_pubkeys=['npub1jch03stp0x3fy6ykv5df2fnhtaq4xqvqlmpjdu68raaqcntca5tqahld7a'],
+    )
+
+    server = NostrAgentServer(relays=relays, 
+                              private_key=private_key, 
+                              nwc_str=nwc_str,
+                              agent_info=agent_info,
+                              agent_callable=agent_callable,
+                              note_filters=note_filters)
+
+    server.start()  
+
+    #agent_callable(ChatInput(messages=["please help me book a flight from SFO to JFK on 09/01/2025, my name is Adam"], thread_id="1"))
+    #agent_callable(ChatInput(messages=["Can you show me my itinerary?"], thread_id="1"))
+
