@@ -148,7 +148,7 @@ def show_itinerary():
     """Show the itinerary for the user"""
     return sorted(list(itinery_database.values()), key=lambda x: datetime.datetime(x.date_time.year, x.date_time.month, x.date_time.day, x.date_time.hour))
 
-def pick_flight(flights: list[Flight], criteria: Literal['shortest', 'cheapest'] = 'shortest') -> Flight:
+def search_flights(flights: list[Flight], criteria: Literal['shortest', 'cheapest'] = 'shortest') -> Flight:
     """Pick up the best flight that matches users' request. we pick the shortest, and cheaper one on ties."""
     sorted_flights = sorted(
         flights,
@@ -207,7 +207,7 @@ agent = dspy.ReAct(
     tools = [
         fetch_flight_info,
         show_itinerary,
-        pick_flight,
+        search_flights,
         book_flight,
         cancel_itinerary
     ]
@@ -254,10 +254,10 @@ if __name__ == "__main__":
 
     agent_info = AgentCard(
         name='Travel Agent',
-        description=('This agent can help you book and manage flights.'),
+        description=('This agent can help you find, book, and manage flights.'),
         skills=[Skill(name='book_flight', description='Book a flight on behalf of a user.', satoshis=25),
                 Skill(name='show_itinerary', description='Show the itinerary for the user.', satoshis=0),
-                Skill(name='pick_flight', description='Pick the best flight that matches users\' request.', satoshis=10),
+                Skill(name='search_flights', description='Search for flights that matches users\' request.', satoshis=0),
                 Skill(name='cancel_itinerary', description='Cancel an itinerary on behalf of the user.', satoshis=0),
                 ],
         satoshis=0,
