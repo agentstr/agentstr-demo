@@ -120,22 +120,22 @@ itinery_database = {}
 ticket_database = {}
 
 
-def fetch_flight_info(date: Date, origin: str, destination: str):
-    """Fetch flight information from origin to destination on the given date"""
-    flights = []
-
-    for flight_id, flight in flight_database.items():
-        if (
-            flight.date_time.year == date.year
-            and flight.date_time.month == date.month
-            and flight.date_time.day == date.day
-            and flight.origin == origin
-            and flight.destination == destination
-        ):
-            flights.append(flight)
-    if len(flights) == 0:
-        raise ValueError("No matching flight found!")
-    return flights
+#def fetch_flight_info(origin: str, destination: str):
+#    """Fetch flight information from origin to destination on the given date"""
+#    flights = []
+#
+#    for flight_id, flight in flight_database.items():
+#        if (
+#            flight.date_time.year == date.year
+#            and flight.date_time.month == date.month
+#            and flight.date_time.day == date.day
+#            and flight.origin == origin
+#            and flight.destination == destination
+#        ):
+#            flights.append(flight)
+#    if len(flights) == 0:
+#        raise ValueError("No matching flight found!")
+#    return flights
 
 
 #def fetch_itinerary(confirmation_number: str | None = None):
@@ -148,10 +148,10 @@ def show_itinerary():
     """Show the itinerary for the user"""
     return sorted(list(itinery_database.values()), key=lambda x: datetime.datetime(x.date_time.year, x.date_time.month, x.date_time.day, x.date_time.hour))
 
-def search_flights(flights: list[Flight], criteria: Literal['shortest', 'cheapest'] = 'shortest') -> Flight:
+def search_flights(criteria: Literal['shortest', 'cheapest'] = 'shortest') -> Flight:
     """Pick up the best flight that matches users' request. we pick the shortest, and cheaper one on ties."""
     sorted_flights = sorted(
-        flights,
+        list(flight_database.values()),
         key=lambda x: (
             x.get("duration" if criteria == 'shortest' else "price") if isinstance(x, dict) else x.duration,
             x.get("price" if criteria == 'shortest' else "duration") if isinstance(x, dict) else x.price,
@@ -205,7 +205,6 @@ class DSPyAirlineCustomerSerice(dspy.Signature):
 agent = dspy.ReAct(
     DSPyAirlineCustomerSerice,
     tools = [
-        fetch_flight_info,
         show_itinerary,
         search_flights,
         book_flight,
