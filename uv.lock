@@ -10,7 +10,7 @@ resolution-markers = [
 
 [[package]]
 name = "agentstr-sdk"
-version = "0.1.2"
+version = "0.1.4"
 source = { directory = "../nostr-agent-tools" }
 dependencies = [
     { name = "bolt11" },
@@ -1478,7 +1478,7 @@ requires-dist = [
     { name = "langchain-openai", specifier = ">=0.3.18" },
     { name = "langchain-sandbox", specifier = ">=0.0.6" },
     { name = "langgraph", specifier = ">=0.4.3" },
-    { name = "nostr-langchain-mcp", specifier = ">=0.0.1" },
+    { name = "nostr-langchain-mcp", directory = "../langchain-mcp-adapters" },
     { name = "pydantic", specifier = ">=2.11.4" },
     { name = "pynostr", specifier = ">=0.6.2" },
     { name = "tavily-python", specifier = ">=0.7.3" },
@@ -1487,16 +1487,30 @@ requires-dist = [
 
 [[package]]
 name = "nostr-langchain-mcp"
-version = "0.0.1"
-source = { registry = "https://pypi.org/simple" }
+version = "0.0.2"
+source = { directory = "../langchain-mcp-adapters" }
 dependencies = [
     { name = "agentstr-sdk" },
     { name = "langchain-core" },
     { name = "mcp" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/4d/e8/b6087fd6b5b17f6a96f53f998ae4cd47f55cdfbc435bcfbf2df15c2d9645/nostr_langchain_mcp-0.0.1.tar.gz", hash = "sha256:c14a397a4f062ec06452dd8e1aaf9157690918c6828879a7e68c8f0750675b74", size = 16058 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/85/36/d9b2a7181d104b70c22aaa2611e334ce5ef71ca9b119a588d9b54b0c6804/nostr_langchain_mcp-0.0.1-py3-none-any.whl", hash = "sha256:432eb96a03a0027b0f6842e120c1323f5fd3c48b05208f377b607986dec5f7f4", size = 11672 },
+
+[package.metadata]
+requires-dist = [
+    { name = "agentstr-sdk", specifier = ">=0.1.4" },
+    { name = "langchain-core", specifier = ">=0.3.36,<0.4" },
+    { name = "mcp", specifier = ">=1.7" },
+]
+
+[package.metadata.requires-dev]
+test = [
+    { name = "mypy", specifier = ">=1.8.0" },
+    { name = "pytest", specifier = ">=8.0.0" },
+    { name = "pytest-asyncio", specifier = ">=0.26.0" },
+    { name = "pytest-socket", specifier = ">=0.7.0" },
+    { name = "ruff", specifier = ">=0.9.4" },
+    { name = "types-setuptools", specifier = ">=69.0.0" },
+    { name = "websockets", specifier = ">=15.0.1" },
 ]
 
 [[package]]

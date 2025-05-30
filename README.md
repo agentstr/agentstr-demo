@@ -90,7 +90,7 @@ A script running an MCP server for Bitcoin-related queries.
 - **Usage**: Provides Bitcoin price and blockchain data over Nostr.
 - **Example**: Query current Bitcoin price:
   ```json
-  {"action": "call_tool", "tool_name": "get_market_cap", "arguments": {}}
+  {"action": "call_tool", "tool_name": "get_bitcoin_data", "arguments": {}}
   ```
 
 #### 2. [mcp_servers/nostr_rag/server.py](mcp_servers/nostr_rag/server.py)
@@ -104,7 +104,7 @@ A script running an MCP server for Nostr RAG (Retrieval-Augmented Generation).
 - **Usage**: Enables semantic search over Nostr content.
 - **Example**: Search for similar content:
   ```json
-  {"action": "call_tool", "tool_name": "retrieve", "arguments": {"question": "bitcoin price prediction"}}
+  {"action": "call_tool", "tool_name": "retrieve", "arguments": {"question": "what's new with bitcoin?"}}
   ```
 
 #### 3. [mcp_servers/web_search/server.py](mcp_servers/web_search/server.py)

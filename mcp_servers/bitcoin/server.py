@@ -34,6 +34,17 @@ def get_block_count() -> str:
 
 
 def get_bitcoin_data() -> dict:
+    """Get latest Bitcoin blockchain data
+
+    Returns:
+        24hr_price: 24 hour weighted price from the largest exchanges
+        market_cap: USD market cap (based on 24 hour weighted price)
+        24hr_transaction_count: Number of transactions in the last 24 hours
+        24hr_btc_sent: Number of BTC sent in the last 24 hours
+        hashrate: Current hashrate in GH/s
+        difficulty: Current difficulty
+        block_count: Current block count
+    """
     return {
         "24hr_price": get_24hr_price(),
         "market_cap": get_market_cap(),

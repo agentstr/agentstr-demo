@@ -4,12 +4,12 @@ version = "0.1.0"
 description = "Decentralized AI agent using Nostr and MCP"
 requires-python = ">=3.11"
 dependencies = [
-    "agentstr-sdk[rag]>=0.0.5",
+    "agentstr-sdk[rag]>=0.1.4",
     "fastapi>=0.115.12",
     "langgraph>=0.4.3",
     "pynostr>=0.6.2",
     "uvicorn>=0.34.2",
-    "nostr-langchain-mcp>=0.0.1",
+    "nostr-langchain-mcp>=0.0.2",
     "langchain-sandbox>=0.0.6",
     "tavily-python>=0.7.3",
     "langchain-openai>=0.3.18",
@@ -22,4 +22,4 @@ reinstall-package = ["nostr-langchain-mcp", "agentstr-sdk"]
 
 [tool.uv.sources]
 agentstr-sdk = { path = "/Users/ehallmark/repos/nostr-agent-tools/" }
-langchain-nostr-mcp-adapters = { path = "/Users/ehallmark/repos/langchain-mcp-adapters/" }
+nostr-langchain-mcp = { path = "/Users/ehallmark/repos/langchain-mcp-adapters/" }

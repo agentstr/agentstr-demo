@@ -13,6 +13,7 @@ def web_search(query: str, num_results: int = 10) -> dict:
     Returns:
         A dictionary containing search results
     """
+    print(f"Received query: {query}")
     # Get the Tavily API key from environment variables
     tavily_api_key = os.getenv('TAVILY_API_KEY')
     if not tavily_api_key:
@@ -23,7 +24,7 @@ def web_search(query: str, num_results: int = 10) -> dict:
         tavily_client = TavilyClient(api_key=tavily_api_key)
         
         # Perform the search
-        results = tavily_client.search(query, num_results=num_results).get('results', [])
+        results = tavily_client.search(query, max_results=num_results, topic='news').get('results', [])
         
         # Format results for MCP
         formatted_results = {
@@ -42,9 +43,11 @@ def web_search(query: str, num_results: int = 10) -> dict:
             ]
         }
         
+        print(f"Search results: {formatted_results}")
         return formatted_results
     
     except Exception as e:
+        print(f"Search failed: {str(e)}")
         return {
             "error": f"Search failed: {str(e)}"
         }
@@ -61,6 +64,8 @@ if __name__ == "__main__":
     relays = os.getenv('NOSTR_RELAYS').split(',')
     private_key = os.getenv('MCP_SERVER_PRIVATE_KEY')
     nwc_str = os.getenv('MCP_SERVER_NWC_CONN_STR')
+
+    #web_search("what's new with bitcoin?")
 
     # Create the MCP server
     server = NostrMCPServer(

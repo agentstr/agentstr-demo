@@ -11,7 +11,7 @@ from contextlib import asynccontextmanager
 from langchain_mcp_adapters.client import MultiServerMCPClient, NostrConnection
 from langgraph.prebuilt import create_react_agent
 from langgraph.checkpoint.memory import MemorySaver
-from agentstr import NostrClient, NostrAgentServer
+from agentstr import NostrClient, NostrAgentServer, AgentCard, Skill, ChatInput
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 
@@ -46,34 +46,9 @@ async def mcp_client():
         ) for mcp_server in mcp_servers
     }
     client = MultiServerMCPClient(mcp_connections)
-    connections = client.connections or {}
-    client.connections = connections
-    for server_name, connection in connections.items():
+    for server_name, connection in client.connections.items():
         await client.connect_to_server(server_name, **connection)
     return client
-
-
-class Skill(BaseModel):
-    """Skill to be used by the agent."""
-
-    name: str
-    description: str
-
-
-class AgentInfo(BaseModel):
-    """Agent information."""
-
-    name: str
-    description: str
-    skills: list[Skill]
-    satoshis: int
-    nostr_pubkey: str
-
-
-class ChatInput(BaseModel):
-    messages: list[str]
-    thread_id: Optional[str] = None
-
 
 
 @asynccontextmanager
@@ -85,16 +60,16 @@ async def lifespan(app: FastAPI):
     skills = [Skill(
                 name=tool.name,
                 description=tool.description,
+                satoshis=tool.metadata.get("satoshis", 0),
             ) for tool in tools]
-    ml_models["agent_info"] = AgentInfo(
+    ml_models["agent_info"] = AgentCard(
         name='Research Agent',
         description=('This agent can query bitcoin blockchain data, '
-                     'get the exchange rate between two currencies, '
-                     'query Nostr for content, '
                      'and perform web search.'),
         skills=skills,
-        satoshis=50,
+        satoshis=5,
         nostr_pubkey=PrivateKey.from_nsec(os.getenv('AGENT_PRIVATE_KEY')).public_key.bech32(),
+        nostr_relays=relays,
     )
     ml_models["agent"] = agent
 
@@ -102,11 +77,12 @@ async def lifespan(app: FastAPI):
         nostr_pubkeys=['npub1jch03stp0x3fy6ykv5df2fnhtaq4xqvqlmpjdu68raaqcntca5tqahld7a'],
     )
     server = NostrAgentServer(agent_url=agent_url,
-                             agent_info=ml_models["agent_info"],
-                             relays=relays,
-                             private_key=private_key,
-                             nwc_str=nwc_str,
-                             note_filters=note_filters)
+                              agent_info=ml_models["agent_info"],
+                              relays=relays,
+                              private_key=private_key,
+                              nwc_str=nwc_str,
+                              note_filters=note_filters,
+                              router_llm=lambda message: model.invoke(message).content)
 
     thr = threading.Thread(target=server.start)
     print(f"Starting nostr agent server...")
