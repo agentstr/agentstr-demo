@@ -10,7 +10,7 @@ resolution-markers = [
 
 [[package]]
 name = "agentstr-sdk"
-version = "0.1.4"
+version = "0.1.8"
 source = { directory = "../nostr-agent-tools" }
 dependencies = [
     { name = "bolt11" },
@@ -1487,7 +1487,7 @@ requires-dist = [
 
 [[package]]
 name = "nostr-langchain-mcp"
-version = "0.0.2"
+version = "0.0.3"
 source = { directory = "../langchain-mcp-adapters" }
 dependencies = [
     { name = "agentstr-sdk" },
@@ -1497,7 +1497,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "agentstr-sdk", specifier = ">=0.1.4" },
+    { name = "agentstr-sdk", directory = "../nostr-agent-tools" },
     { name = "langchain-core", specifier = ">=0.3.36,<0.4" },
     { name = "mcp", specifier = ">=1.7" },
 ]

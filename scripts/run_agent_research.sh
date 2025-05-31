@@ -1,3 +1,3 @@
 #!/bin/bash
 
-uv run uvicorn agents.research.agent:app
+uv run agents/research/agent.py
