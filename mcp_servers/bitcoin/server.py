@@ -1,39 +1,45 @@
-import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+
+import os
+import httpx
+from agentstr import NostrMCPServer
 
 
 BASE_URL = 'https://blockchain.info/q'
 
 
-def get_24hr_price() -> str:
+async def get_24hr_price(client) -> str:
     """24 hour weighted price from the largest exchanges"""
-    return requests.get(f'{BASE_URL}/24hrprice').text
+    return (await client.get(f'{BASE_URL}/24hrprice')).text
 
-def get_market_cap() -> str:
+async def get_market_cap(client) -> str:
     """USD market cap (based on 24 hour weighted price)"""
-    return requests.get(f'{BASE_URL}/marketcap').text
+    return (await client.get(f'{BASE_URL}/marketcap')).text
     
-def get_24hr_transaction_count() -> str:
+async def get_24hr_transaction_count(client) -> str:
     """Number of transactions in the last 24 hours"""
-    return requests.get(f'{BASE_URL}/24hrtransactioncount').text
+    return (await client.get(f'{BASE_URL}/24hrtransactioncount')).text
 
-def get_24hr_btc_sent() -> str:
+async def get_24hr_btc_sent(client) -> str:
     """Number of BTC sent in the last 24 hours"""
-    return requests.get(f'{BASE_URL}/24hrbtcsent').text
+    return (await client.get(f'{BASE_URL}/24hrbtcsent')).text
 
-def get_hashrate() -> str:
+async def get_hashrate(client) -> str:
     """Current hashrate in GH/s"""
-    return requests.get(f'{BASE_URL}/hashrate').text
+    return (await client.get(f'{BASE_URL}/hashrate')).text
 
-def get_difficulty() -> str:
+async def get_difficulty(client) -> str:
     """Current difficulty"""
-    return requests.get(f'{BASE_URL}/getdifficulty').text
+    return (await client.get(f'{BASE_URL}/getdifficulty')).text
 
-def get_block_count() -> str:
+async def get_block_count(client) -> str:
     """Current block count"""
-    return requests.get(f'{BASE_URL}/getblockcount').text
+    return (await client.get(f'{BASE_URL}/getblockcount')).text
 
 
-def get_bitcoin_data() -> dict:
+async def get_bitcoin_data() -> dict:
     """Get latest Bitcoin blockchain data
 
     Returns:
@@ -45,31 +51,32 @@ def get_bitcoin_data() -> dict:
         difficulty: Current difficulty
         block_count: Current block count
     """
-    return {
-        "24hr_price": get_24hr_price(),
-        "market_cap": get_market_cap(),
-        "24hr_transaction_count": get_24hr_transaction_count(),
-        "24hr_btc_sent": get_24hr_btc_sent(),
-        "hashrate": get_hashrate(),
-        "difficulty": get_difficulty(),
-        "block_count": get_block_count(),
-    }
+    async with httpx.AsyncClient() as client:
+        return {
+            "24hr_price": await get_24hr_price(client),
+            "market_cap": await get_market_cap(client),
+            "24hr_transaction_count": await get_24hr_transaction_count(client),
+            "24hr_btc_sent": await get_24hr_btc_sent(client),
+            "hashrate": await get_hashrate(client),
+            "difficulty": await get_difficulty(client),
+            "block_count": await get_block_count(client),
+        }
 
 
-
-if __name__ == "__main__":
-    import os
-    from dotenv import load_dotenv
-    from agentstr import NostrMCPServer
-
-    load_dotenv()
-
+async def run():
     relays = os.getenv('NOSTR_RELAYS').split(',')
     private_key = os.getenv('MCP_SERVER_PRIVATE_KEY')
 
     server = NostrMCPServer("Bitcoin Data Tool", relays=relays, private_key=private_key)
 
-    server.add_tool(get_bitcoin_data)
+    server.add_tool(get_bitcoin_data, satoshis=3)
 
-    server.start()
+    await server.start()
+
+
+if __name__ == "__main__":
+    import asyncio
+    asyncio.run(run())
+
+
     

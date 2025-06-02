@@ -1,7 +1,15 @@
+from dotenv import load_dotenv
+
+load_dotenv()
+
+import os
+from agentstr import AgentCard, Skill
+from agentstr import ChatInput, NostrAgentServer, NoteFilters
+from pynostr.key import PrivateKey
+from langchain_openai import ChatOpenAI
 import random
 import string
 from typing import Literal
-from agentstr import AgentCard, Skill
 from pydantic import BaseModel
 import dspy
 import datetime
@@ -120,35 +128,11 @@ itinery_database = {}
 ticket_database = {}
 
 
-#def fetch_flight_info(origin: str, destination: str):
-#    """Fetch flight information from origin to destination on the given date"""
-#    flights = []
-#
-#    for flight_id, flight in flight_database.items():
-#        if (
-#            flight.date_time.year == date.year
-#            and flight.date_time.month == date.month
-#            and flight.date_time.day == date.day
-#            and flight.origin == origin
-#            and flight.destination == destination
-#        ):
-#            flights.append(flight)
-#    if len(flights) == 0:
-#        raise ValueError("No matching flight found!")
-#    return flights
-
-
-#def fetch_itinerary(confirmation_number: str | None = None):
-#    """Fetch a booked itinerary information from database"""
-#    if len(itinery_database) == 1:
-#        return list(itinery_database.values())[0]
-#    return itinery_database.get(confirmation_number)
-
-def show_itinerary():
+async def show_itinerary():
     """Show the itinerary for the user"""
     return sorted(list(itinery_database.values()), key=lambda x: datetime.datetime(x.date_time.year, x.date_time.month, x.date_time.day, x.date_time.hour))
 
-def search_flights(criteria: Literal['shortest', 'cheapest'] = 'shortest') -> Flight:
+async def search_flights(criteria: Literal['shortest', 'cheapest'] = 'shortest') -> Flight:
     """Pick up the best flight that matches users' request. we pick the shortest, and cheaper one on ties."""
     sorted_flights = sorted(
         list(flight_database.values()),
@@ -165,7 +149,7 @@ def _generate_id(length=8):
     return "".join(random.choices(chars, k=length))
 
 
-def book_flight(flight: Flight):
+async def book_flight(flight: Flight):
     """Book a flight on behalf of the user."""
     confirmation_number = _generate_id()
     while confirmation_number in itinery_database:
@@ -177,7 +161,7 @@ def book_flight(flight: Flight):
     return confirmation_number, itinery_database[confirmation_number]
 
 
-def cancel_itinerary(confirmation_number: str):
+async def cancel_itinerary(confirmation_number: str):
     """Cancel an itinerary on behalf of the user."""
     if confirmation_number in itinery_database:
         del itinery_database[confirmation_number]
@@ -212,44 +196,36 @@ agent = dspy.ReAct(
     ]
 )
 
+llm_api_key = os.getenv("LLM_API_KEY")
+llm_base_url = os.getenv("LLM_BASE_URL")
+llm_model_name = os.getenv("LLM_MODEL_NAME")
 
-if __name__ == "__main__":
-    import os
-    from dotenv import load_dotenv
-    from agentstr import ChatInput, NostrAgentServer, NoteFilters
-    from pynostr.key import PrivateKey
-    from langchain_openai import ChatOpenAI
+model = ChatOpenAI(temperature=0,
+                    base_url=llm_base_url + '/v1',
+                    api_key=llm_api_key,
+                    model_name=llm_model_name)
 
-    load_dotenv()
+dspy.configure(lm=dspy.LM(model=llm_model_name, api_base=llm_base_url, api_key=llm_api_key, model_type='chat'))
 
-    llm_api_key = os.getenv("LLM_API_KEY")
-    llm_base_url = os.getenv("LLM_BASE_URL")
-    llm_model_name = os.getenv("LLM_MODEL_NAME")
 
-    model = ChatOpenAI(temperature=0,
-                       base_url=llm_base_url + '/v1',
-                       api_key=llm_api_key,
-                       model_name=llm_model_name)
-
-    dspy.configure(lm=dspy.LM(model=llm_model_name, api_base=llm_base_url, api_key=llm_api_key, model_type='chat'))
-
+async def run():
     message_history = {}
 
-    def agent_callable(chat_input: ChatInput) -> str:
+    async def agent_callable(chat_input: ChatInput) -> str:
         thread_id = chat_input.thread_id or str(uuid.uuid4())
         print(f"Found request: {chat_input.messages[-1]}")
         history = dspy.History(messages=message_history.get(thread_id, []))
         if thread_id not in message_history:
             message_history[thread_id] = []
-        result = agent(user_request=chat_input.messages[-1], history=history)
+        result = await agent.acall(user_request=chat_input.messages[-1], history=history)
         message_history[thread_id].append({'user_request': chat_input.messages[-1], **result}) 
         print(f"Result: {result.process_result}")       
         return result.process_result
 
-    #agent_callable(ChatInput(messages=["what's the cheapest flight from SFO to JFK on 9/1/2025?"], thread_id="1"))
-    #agent_callable(ChatInput(messages=["can you book that for me?"], thread_id="1"))
-    #agent_callable(ChatInput(messages=["can you show me my itinerary?"], thread_id="1"))
-    #agent_callable(ChatInput(messages=["can you actually book the shortest flight?"], thread_id="1"))
+    #await agent_callable(ChatInput(messages=["what's the cheapest flight from SFO to JFK on 9/1/2025?"], thread_id="1"))
+    #await agent_callable(ChatInput(messages=["can you book that for me?"], thread_id="1"))
+    #await agent_callable(ChatInput(messages=["can you show me my itinerary?"], thread_id="1"))
+    #await agent_callable(ChatInput(messages=["can you actually book the shortest flight?"], thread_id="1"))
 
     agent_info = AgentCard(
         name='Travel Agent',
@@ -277,7 +253,15 @@ if __name__ == "__main__":
                               agent_info=agent_info,
                               agent_callable=agent_callable,
                               note_filters=note_filters,
-                              router_llm=lambda message: model.invoke(message).content)
+                              router_llm=lambda message: model.ainvoke(message).content)
+
+    await server.start()  
 
 
-    server.start()  
+if __name__ == "__main__":
+    import asyncio
+    asyncio.run(run())
+
+
+
+    

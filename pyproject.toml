@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Decentralized AI agent using Nostr and MCP"
 requires-python = ">=3.11"
 dependencies = [
-    "agentstr-sdk[rag]>=0.1.8",
+    "agentstr-sdk[all]>=0.2.4",
     "fastapi>=0.115.12",
     "langgraph>=0.4.3",
     "pynostr>=0.6.2",

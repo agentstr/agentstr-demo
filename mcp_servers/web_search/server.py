@@ -1,13 +1,20 @@
+from typing import Literal
+from dotenv import load_dotenv
+
+load_dotenv()
+
 import os
-from tavily import TavilyClient
+from agentstr import NostrMCPServer
+from tavily import AsyncTavilyClient
 
 
-def web_search(query: str, num_results: int = 10) -> dict:
+async def web_search(query: str, topic: Literal["general", "news", "finance"] = "news", num_results: int = 10) -> dict:
     """
     Search the web using Tavily Search API.
 
     Args:
         query: Search query string
+        topic: Topic of the search (one of "general", "news", "finance"). Defaults to "news".
         num_results: Number of results to return (default: 10)
 
     Returns:
@@ -21,10 +28,10 @@ def web_search(query: str, num_results: int = 10) -> dict:
 
     try:
         # Initialize Tavily client
-        tavily_client = TavilyClient(api_key=tavily_api_key)
+        tavily_client = AsyncTavilyClient(api_key=tavily_api_key)
         
         # Perform the search
-        results = tavily_client.search(query, max_results=num_results, topic='news').get('results', [])
+        results = await tavily_client.search(query, max_results=num_results, topic=topic).get('results', [])
         
         # Format results for MCP
         formatted_results = {
@@ -53,21 +60,14 @@ def web_search(query: str, num_results: int = 10) -> dict:
         }
 
 
-if __name__ == "__main__":
-    import os
-    from dotenv import load_dotenv
-    from agentstr import NostrMCPServer
+# Get the environment variables
+relays = os.getenv('NOSTR_RELAYS').split(',')
+private_key = os.getenv('MCP_SERVER_PRIVATE_KEY')
+nwc_str = os.getenv('MCP_SERVER_NWC_CONN_STR')
 
-    load_dotenv()
 
-    # Get the environment variables
-    relays = os.getenv('NOSTR_RELAYS').split(',')
-    private_key = os.getenv('MCP_SERVER_PRIVATE_KEY')
-    nwc_str = os.getenv('MCP_SERVER_NWC_CONN_STR')
-
-    #web_search("what's new with bitcoin?")
-
-    # Create the MCP server
+async def run():
+        # Create the MCP server
     server = NostrMCPServer(
         "Web Search Tool",
         relays=relays,
@@ -79,4 +79,10 @@ if __name__ == "__main__":
                     satoshis=10)
 
     # Start the server
-    server.start()
+    await server.start()
+
+
+if __name__ == "__main__":
+    import asyncio
+    asyncio.run(run())
+
