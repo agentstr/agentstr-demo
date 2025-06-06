@@ -4,7 +4,7 @@ load_dotenv()
 
 import os
 from agentstr import AgentCard, Skill
-from agentstr import ChatInput, NostrAgentServer, NoteFilters
+from agentstr import ChatInput, NostrAgentServer, NoteFilters, default_price_handler
 from pynostr.key import PrivateKey
 from langchain_openai import ChatOpenAI
 import random
@@ -200,12 +200,7 @@ llm_api_key = os.getenv("LLM_API_KEY")
 llm_base_url = os.getenv("LLM_BASE_URL")
 llm_model_name = os.getenv("LLM_MODEL_NAME")
 
-model = ChatOpenAI(temperature=0,
-                    base_url=llm_base_url + '/v1',
-                    api_key=llm_api_key,
-                    model_name=llm_model_name)
-
-dspy.configure(lm=dspy.LM(model=llm_model_name, api_base=llm_base_url, api_key=llm_api_key, model_type='chat'))
+dspy.configure(lm=dspy.LM(model=llm_model_name, api_base=llm_base_url.rstrip('/v1'), api_key=llm_api_key, model_type='chat'))
 
 
 async def run():
@@ -222,11 +217,7 @@ async def run():
         print(f"Result: {result.process_result}")       
         return result.process_result
 
-    #await agent_callable(ChatInput(messages=["what's the cheapest flight from SFO to JFK on 9/1/2025?"], thread_id="1"))
-    #await agent_callable(ChatInput(messages=["can you book that for me?"], thread_id="1"))
-    #await agent_callable(ChatInput(messages=["can you show me my itinerary?"], thread_id="1"))
-    #await agent_callable(ChatInput(messages=["can you actually book the shortest flight?"], thread_id="1"))
-
+    # Define agent info
     agent_info = AgentCard(
         name='Travel Agent',
         description=('This agent can help you find, book, and manage flights.'),
@@ -246,16 +237,16 @@ async def run():
     note_filters = NoteFilters(
         nostr_pubkeys=['npub1jch03stp0x3fy6ykv5df2fnhtaq4xqvqlmpjdu68raaqcntca5tqahld7a'],
     )
-
+    
     server = NostrAgentServer(relays=relays, 
                               private_key=private_key, 
                               nwc_str=nwc_str,
                               agent_info=agent_info,
                               agent_callable=agent_callable,
                               note_filters=note_filters,
-                              router_llm=lambda message: model.ainvoke(message).content)
+                              price_handler=default_price_handler())
 
-    await server.start()  
+    await server.start()
 
 
 if __name__ == "__main__":

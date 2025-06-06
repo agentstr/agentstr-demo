@@ -38,7 +38,6 @@ async def get_block_count(client) -> str:
     """Current block count"""
     return (await client.get(f'{BASE_URL}/getblockcount')).text
 
-
 async def get_bitcoin_data() -> dict:
     """Get latest Bitcoin blockchain data
 
@@ -67,9 +66,10 @@ async def run():
     relays = os.getenv('NOSTR_RELAYS').split(',')
     private_key = os.getenv('MCP_SERVER_PRIVATE_KEY')
 
-    server = NostrMCPServer("Bitcoin Data Tool", relays=relays, private_key=private_key)
-
-    server.add_tool(get_bitcoin_data, satoshis=3)
+    server = NostrMCPServer("Bitcoin Data Tool", 
+                            relays=relays, 
+                            private_key=private_key,
+                            tools=[get_bitcoin_data])
 
     await server.start()
 

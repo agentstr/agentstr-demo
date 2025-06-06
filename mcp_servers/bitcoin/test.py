@@ -21,7 +21,7 @@ async def run():
     mcp_client = NostrMCPClient(mcp_pubkey=server_public_key, relays=relays, private_key=private_key)
 
     # List available tools
-    tools = mcp_client.list_tools()
+    tools = await mcp_client.list_tools()
     print(f'Found tools: {json.dumps(tools, indent=4)}')
 
     # Call a tool
