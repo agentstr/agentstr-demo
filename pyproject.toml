@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Decentralized AI agents on Nostr using Agentstr SDK"
 requires-python = ">=3.11"
 dependencies = [
-    "agentstr-sdk[all]>=0.3.7",
+    "agentstr-sdk[all]>=0.3.8",
     "fastapi>=0.115.12",
     "uvicorn>=0.34.2",
     "tavily-python>=0.7.3",

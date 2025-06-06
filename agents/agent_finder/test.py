@@ -33,6 +33,12 @@ async def ask_agent():
     await asyncio.sleep(1)
     response = await client.send_direct_message_and_receive_response(
         agent_public_key,
+        "Can you help me find the current hashrate of bitcoin?",
+    )
+    print(response.message)
+    await asyncio.sleep(1)
+    response = await client.send_direct_message_and_receive_response(
+        agent_public_key,
         "Can someone help me with legal advice?",
     )
     print(response.message)

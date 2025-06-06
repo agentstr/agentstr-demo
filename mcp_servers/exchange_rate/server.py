@@ -52,9 +52,13 @@ async def get_exchange_rate(
 
 async def run():
     # Create an instance of NostrClient
-    server = NostrMCPServer("Exchange Rate Tool", relays=relays, private_key=private_key, nwc_str=nwc_str)
-    server.add_tool(get_exchange_rate, satoshis=3)  # Specify price in satoshis
-
+    server = NostrMCPServer("Exchange Rate Tool", 
+        relays=relays, 
+        private_key=private_key, 
+        nwc_str=nwc_str,
+        tools=[get_exchange_rate]
+    )
+    
     await server.start()
 
 

@@ -20,7 +20,7 @@ async def ask_agent():
     client = NostrClient(relays, PrivateKey().bech32())
     response = await client.send_direct_message_and_receive_response(
         agent_public_key,
-        "tell me about ulcerative colitis.",
+        "what's the latest news about bitcoin?",
     )
     print(response.message)
 

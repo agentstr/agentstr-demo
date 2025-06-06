@@ -10,14 +10,13 @@ from agentstr.nostr_agent_server import NoteFilters
 from pynostr.key import PrivateKey
 from langgraph.prebuilt import create_react_agent
 from langgraph.checkpoint.memory import MemorySaver
-from agentstr import NostrClient, NostrAgentServer, AgentCard, NostrMCPClient, Skill, ChatInput, default_price_handler
+from agentstr import NostrClient, NostrAgentServer, AgentCard, NostrMCPClient, Skill, ChatInput
 from agentstr.mcp.langgraph import to_langgraph_tools
 from langchain_openai import ChatOpenAI
 
 # Get the environment variables
 relays = os.getenv('NOSTR_RELAYS').split(',')
 private_key = os.getenv('AGENT_PRIVATE_KEY')
-nwc_str = os.getenv('AGENT_NWC_CONN_STR')
 
 # Define LLM
 model = ChatOpenAI(temperature=0,
@@ -26,19 +25,17 @@ model = ChatOpenAI(temperature=0,
                    model_name=os.getenv('LLM_MODEL_NAME'))
 
 # Initialize Nostr client
-nostr_client = NostrClient(relays, private_key, nwc_str)
+nostr_client = NostrClient(relays, private_key)
 
 async def run():
     # Discover MCP servers
-    mcp_servers = await nostr_client.read_posts_by_tag(os.getenv('NOSTR_MCP_TOOL_DISCOVERY_TAG'))
+    mcp_pubkey = 'npub1m7kklaydljpjscl37xpdgtzfs66u70t5aex68pgdnsmjcx0vllrsmxl6vk'
 
     # Get tools from MCP servers
-    tools: list[BaseTool] = []
-    for mcp_server in mcp_servers:
-        tools.extend(await to_langgraph_tools(NostrMCPClient(
-            nostr_client=nostr_client,
-            mcp_pubkey=mcp_server.pubkey,
-        )))
+    tools: list[BaseTool] = await to_langgraph_tools(NostrMCPClient(
+        nostr_client=nostr_client,
+        mcp_pubkey=mcp_pubkey,
+    ))
 
     # Create ReAct agent
     agent = create_react_agent(model, tools, checkpointer=MemorySaver())
@@ -52,9 +49,8 @@ async def run():
 
     # Define agent info
     agent_info = AgentCard(
-        name='Research Agent',
-        description=('This agent can query bitcoin blockchain data, '
-                    'and perform web search.'),
+        name='Bitcoin Agent',
+        description='This agent can query bitcoin blockchain data',
         skills=skills,
         satoshis=0,
         nostr_pubkey=PrivateKey.from_nsec(private_key).public_key.bech32(),
@@ -76,8 +72,7 @@ async def run():
     server = NostrAgentServer(nostr_client,
                               note_filters=note_filters,
                               agent_info=agent_info,
-                              agent_callable=agent_callable,
-                              price_handler=default_price_handler())
+                              agent_callable=agent_callable)
 
     # Start server
     await server.start()

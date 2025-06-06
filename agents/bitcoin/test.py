@@ -20,22 +20,9 @@ async def ask_agent():
     client = NostrClient(relays, PrivateKey().bech32())
     response = await client.send_direct_message_and_receive_response(
         agent_public_key,
-        "what's the exchange rate of USD to EUR?",
+        "what's the current hashrate of bitcoin?",
     )
     print(response.message)
-    await asyncio.sleep(1)
-    response = await client.send_direct_message_and_receive_response(
-        agent_public_key,
-        "How much is nvidia?",
-    )
-    print(response.message)
-    await asyncio.sleep(1)
-    response = await client.send_direct_message_and_receive_response(
-        agent_public_key,
-        "what's the stock price of apple?",
-    )
-    print(response.message)
-
 
 
 if __name__ == "__main__":

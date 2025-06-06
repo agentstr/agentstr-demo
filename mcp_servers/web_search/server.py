@@ -1,20 +1,19 @@
-from typing import Literal
 from dotenv import load_dotenv
 
 load_dotenv()
 
 import os
-from agentstr import NostrMCPServer
+from agentstr import NostrMCPServer, tool
 from tavily import AsyncTavilyClient
 
 
-async def web_search(query: str, topic: Literal["general", "news", "finance"] = "news", num_results: int = 10) -> dict:
+@tool(satoshis=0)
+async def web_search(query: str, num_results: int = 10) -> dict:
     """
     Search the web using Tavily Search API.
 
     Args:
         query: Search query string
-        topic: Topic of the search (one of "general", "news", "finance"). Defaults to "news".
         num_results: Number of results to return (default: 10)
 
     Returns:
@@ -31,7 +30,7 @@ async def web_search(query: str, topic: Literal["general", "news", "finance"] = 
         tavily_client = AsyncTavilyClient(api_key=tavily_api_key)
         
         # Perform the search
-        results = await tavily_client.search(query, max_results=num_results, topic=topic).get('results', [])
+        results = (await tavily_client.search(query, max_results=num_results, topic="news")).get('results', [])
         
         # Format results for MCP
         formatted_results = {
@@ -73,10 +72,8 @@ async def run():
         relays=relays,
         private_key=private_key,
         nwc_str=nwc_str,
+        tools=[web_search]
     )
-
-    server.add_tool(web_search,
-                    satoshis=10)
 
     # Start the server
     await server.start()
