@@ -30,7 +30,12 @@ async def ask_agent():
         "Can someone help me answer a medical question?",
     )
     print(response.message)
-
+    await asyncio.sleep(1)
+    response = await client.send_direct_message_and_receive_response(
+        agent_public_key,
+        "Can someone help me with legal advice?",
+    )
+    print(response.message)
 
 
 if __name__ == "__main__":

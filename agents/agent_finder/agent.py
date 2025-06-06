@@ -21,11 +21,13 @@ with open(os.path.join(os.path.dirname(__file__), 'known_agents.txt'), 'r') as f
 
 async def run():
     agent_cards = []
+    name_to_pubkey = {}
     for pubkey in known_agents:
         metadata = await client.get_metadata_for_pubkey(pubkey.strip())
         try:
             agent_info = AgentCard.model_validate_json(metadata.about)
             agent_cards.append(agent_info)
+            name_to_pubkey[agent_info.name] = pubkey
             print(json.dumps(agent_info.model_dump(), indent=4))
         except:
             pass  # Invalid agent card
@@ -36,7 +38,7 @@ async def run():
 Your task is to carefully analyze the user's request and match it with the most suitable agent from the list below. Consider the following guidelines:
 1. Only recommend an agent if there's a strong match with the user's request
 2. Be specific about why the agent is a good match
-3. If no agent is a good fit, return None
+3. If no agent is a good fit, explicitly state that no agent is a good fit
 4. Consider both the agent's name and description when making matches
 
 Available Agents:
@@ -91,7 +93,23 @@ User: "Find me a coding tutor"
     # Define agent callable
     async def agent_callable(input: ChatInput) -> str:
         result = await agent.arun(message=input.messages[-1], session_id=input.thread_id)
-        return result.content
+        content = result.content
+        if '{' in content and '}' in content:
+            try:
+                content = json.loads(content[content.find("{"):content.rfind("}")+1])
+                name = content.get('name')
+                message = content.get('message')
+                if name and name in name_to_pubkey:
+                    pubkey = name_to_pubkey[name]
+                    link = f'https://primal.net/p/{pubkey}'
+                    return f"{message}.\n\nYou can find them here: {link}"
+                return message if message else "No agent with relevant skills found."
+            except:
+                pass
+        elif "none" == content.lower().strip():
+            return "No agent with relevant skills found."
+        return content.strip()
+        
 
     # Create Nostr Agent Server
     server = NostrAgentServer(relays=os.getenv("NOSTR_RELAYS").split(","),
