@@ -116,7 +116,7 @@ User: "Find me a coding tutor"
                               private_key=os.getenv("AGENT_PRIVATE_KEY"),
                               nwc_str=os.getenv("AGENT_NWC_CONN_STR"),
                               agent_info=AgentCard(
-                                  name='Agent Finder',
+                                  name='Agent Router',
                                   description='This agent can help users find other agents on Nostr.',
                                   skills=[Skill(
                                     name='agent_finder', 
