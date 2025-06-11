@@ -53,7 +53,7 @@ async def run():
         name='News Agent',
         description=('This agent can perform web search for news articles.'),
         skills=skills,
-        satoshis=0,
+        satoshis=15,
         nostr_pubkey=PrivateKey.from_nsec(private_key).public_key.bech32(),
         nostr_relays=relays,
     )
@@ -73,8 +73,7 @@ async def run():
     server = NostrAgentServer(nostr_client,
                               note_filters=note_filters,
                               agent_info=agent_info,
-                              agent_callable=agent_callable,
-                              price_handler=default_price_handler())
+                              agent_callable=agent_callable)
 
     # Start server
     await server.start()

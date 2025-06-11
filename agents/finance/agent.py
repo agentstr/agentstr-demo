@@ -68,15 +68,14 @@ async def run():
         Skill(name='historical_prices', description='Get the historical prices of a stock.', satoshis=0),
         Skill(name='exchange_rate', description='Get the exchange rate of currencies.', satoshis=0),
     ],
-    satoshis=0,#satoshis=10,
+    satoshis=10,
     nostr_pubkey=PrivateKey.from_nsec(private_key).public_key.bech32(),
 )
     server = NostrAgentServer(relays=relays,
                               private_key=private_key,
                               agent_callable=agent_callable,
                               agent_info=agent_info,
-                              nwc_str=nwc_str,
-                              price_handler=default_price_handler())
+                              nwc_str=nwc_str)
     await server.start()
 
 

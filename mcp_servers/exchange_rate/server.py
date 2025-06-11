@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import httpx
-from agentstr import NostrMCPServer
+from agentstr import NostrMCPServer, tool
 
 # Get the environment variables
 relays = os.getenv('NOSTR_RELAYS').split(',')
@@ -12,6 +12,7 @@ private_key = os.getenv('MCP_SERVER_PRIVATE_KEY')
 nwc_str = os.getenv('MCP_SERVER_NWC_CONN_STR')
 
 
+@tool(satoshis=5)
 async def get_exchange_rate(
         currency_from: str = 'USD',
         currency_to: str = 'EUR',

@@ -43,11 +43,10 @@ async def agent_server():
                                     description='Search for medical articles in the PubMed database that matches users\' request.', 
                                     satoshis=0
                                   )],
-                                  satoshis=0,
+                                  satoshis=15,
                                   nostr_pubkey=PrivateKey.from_nsec(os.getenv('AGENT_PRIVATE_KEY')).public_key.bech32(),
                               ),
-                              agent_callable=agent_callable,
-                              price_handler=default_price_handler())
+                              agent_callable=agent_callable)
 
     # Start server
     await server.start()

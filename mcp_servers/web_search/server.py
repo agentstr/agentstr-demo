@@ -7,7 +7,7 @@ from agentstr import NostrMCPServer, tool
 from tavily import AsyncTavilyClient
 
 
-@tool(satoshis=0)
+@tool(satoshis=10)
 async def web_search(query: str, num_results: int = 10) -> dict:
     """
     Search the web using Tavily Search API.
