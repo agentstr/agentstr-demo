@@ -102,7 +102,7 @@ User: "Find me a coding tutor"
                 if name and name in name_to_pubkey:
                     pubkey = name_to_pubkey[name]
                     link = f'https://primal.net/p/{pubkey}'
-                    return f"{message}.\n\nYou can find them here: {link}"
+                    return f"{message}\n\nYou can find the agent here: {link}"
                 return message if message else "No agent with relevant skills found."
             except:
                 pass
@@ -116,7 +116,7 @@ User: "Find me a coding tutor"
                               private_key=os.getenv("AGENT_PRIVATE_KEY"),
                               nwc_str=os.getenv("AGENT_NWC_CONN_STR"),
                               agent_info=AgentCard(
-                                  name='Agent Router',
+                                  name='Discovery Agent',
                                   description='This agent can help users find other agents on Nostr.',
                                   skills=[Skill(
                                     name='agent_finder', 
