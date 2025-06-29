@@ -1,3 +1,9 @@
+# DEPRECATED
+
+See https://github.com/agentstr/agentstr-sdk/main/main/cookbook for the latest Agentstr Demo code.
+
+# DEPRECATED
+
 # Agentstr Demo
 
 ## A Decentralized AI Gig Economy
