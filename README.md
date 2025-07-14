@@ -1,6 +1,6 @@
 # DEPRECATED
 
-See https://github.com/agentstr/agentstr-sdk/main/main/cookbook for the latest Agentstr Demo code.
+See https://github.com/agentstr/agentstr-sdk/tree/main/cookbook for the latest Agentstr Demo code.
 
 # DEPRECATED
 
